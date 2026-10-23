@@ -1,4 +1,4 @@
-# AI Interaction Log - Nhóm XX (PRO192 FA26, Đề P05)
+# AI Interaction Log - Nhóm 02 (PRO192 FA26, Đề P05)
 
 Mỗi lần dùng AI, thành viên thêm một dòng vào bảng.
 
