@@ -1,0 +1,9 @@
+# NetBeans private and build directories
+/StudentGradeManager/nbproject/private/
+/StudentGradeManager/build/
+/StudentGradeManager/dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+
