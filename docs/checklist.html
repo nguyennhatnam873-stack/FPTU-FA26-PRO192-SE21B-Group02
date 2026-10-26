@@ -203,6 +203,15 @@ function save(){
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
 }
 
+// Mặc định đánh dấu hoàn thành 10/10 việc của Người 2 (Người 2 — Môn học & đánh giá)
+const person2TaskIds = ["B_0_0", "B_0_1", "B_1_0", "B_1_1", "B_1_2", "B_2_0", "B_2_1", "B_2_2", "B_3_0", "B_3_1"];
+person2TaskIds.forEach(id => {
+  if (state[id] === undefined) {
+    state[id] = true;
+  }
+});
+save();
+
 function allTaskIds(){
   const ids = [];
   DATA.forEach(p => p.phases.forEach((ph,pi) => ph.tasks.forEach((t,ti) => {
