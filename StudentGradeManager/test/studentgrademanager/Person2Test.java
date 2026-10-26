@@ -63,8 +63,18 @@ public class Person2Test {
         Course ltCourse = new TheoryCourse("LT101", "Lý thuyết Hướng đối tượng", 3);
         Course thCourse = new PracticeCourse("TH101", "Thực hành Java", 2);
 
-        Double ltGrade = ltCourse.calculateFinalGrade(8.0, 6.0);
-        Double thGrade = thCourse.calculateFinalGrade(8.0, 6.0);
+        // Kiểm thử theo đúng tên phương thức trong Class Diagram: calculateFinalScore(double, double)
+        double ltScorePrimitive = ltCourse.calculateFinalScore(8.0, 6.0);
+        double thScorePrimitive = thCourse.calculateFinalScore(8.0, 6.0);
+        boolean passLTPrimitive = Math.abs(ltScorePrimitive - 6.60) < 0.0001;
+        boolean passTHPrimitive = Math.abs(thScorePrimitive - 7.00) < 0.0001;
+        assertTrue("Class Diagram - calculateFinalScore LT (8.0, 6.0)", passLTPrimitive, 
+                String.format("Kỳ vọng: 6.60 | Thực tế: %.2f", ltScorePrimitive));
+        assertTrue("Class Diagram - calculateFinalScore TH (8.0, 6.0)", passTHPrimitive, 
+                String.format("Kỳ vọng: 7.00 | Thực tế: %.2f", thScorePrimitive));
+
+        Double ltGrade = ltCourse.calculateFinalScore(Double.valueOf(8.0), Double.valueOf(6.0));
+        Double thGrade = thCourse.calculateFinalScore(Double.valueOf(8.0), Double.valueOf(6.0));
 
         boolean passLT = (ltGrade != null) && (Math.abs(ltGrade - 6.60) < 0.0001);
         boolean passTH = (thGrade != null) && (Math.abs(thGrade - 7.00) < 0.0001);

@@ -4,13 +4,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Lớp trừu tượng đại diện cho một môn học chung trong hệ thống.
+ * Lớp trừu tượng Course theo đúng Class Diagram đề tài P05.
  * Phụ trách: Người 2 — Môn học & đánh giá
- * 
- * Quy ước:
- * - Mọi thuộc tính đều là private (tính đóng gói 100%).
- * - Sử dụng 'this.' tường minh khi truy xuất thuộc tính và phương thức.
- * - Cung cấp phương thức trừu tượng calculateFinalGrade để các lớp con cài đặt đa hình.
  */
 public abstract class Course implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -22,14 +17,6 @@ public abstract class Course implements Serializable {
     private String courseName;
     private int credits;
 
-    /**
-     * Khởi tạo một môn học.
-     * 
-     * @param courseId Mã môn học (không rỗng, duy nhất)
-     * @param courseName Tên môn học (không rỗng)
-     * @param credits Số tín chỉ nguyên từ 1 đến 6
-     * @throws IllegalArgumentException nếu các giá trị không hợp lệ
-     */
     public Course(String courseId, String courseName, int credits) {
         if (!isValidCourseId(courseId)) {
             throw new IllegalArgumentException("Mã môn học không được để trống.");
@@ -46,63 +33,7 @@ public abstract class Course implements Serializable {
         this.credits = credits;
     }
 
-    /**
-     * Phương thức đa hình cốt lõi tính điểm tổng kết của môn học dựa trên hai điểm thành phần.
-     * 
-     * @param processGrade Điểm quá trình (từ 0.0 đến 10.0, hoặc null nếu chưa có)
-     * @param finalExamGrade Điểm cuối kỳ (từ 0.0 đến 10.0, hoặc null nếu chưa có)
-     * @return Điểm tổng kết (chưa làm tròn), hoặc null nếu thiếu một trong hai điểm thành phần
-     */
-    public abstract Double calculateFinalGrade(Double processGrade, Double finalExamGrade);
-
-    /**
-     * Lấy tên loại môn học (tiếng Việt có dấu để hiển thị trên giao diện bảng điểm).
-     * 
-     * @return Tên loại môn: "Lý thuyết" hoặc "Thực hành"
-     */
-    public abstract String getCourseType();
-
-    /**
-     * Lấy mã loại môn học (chuẩn hóa viết hoa dùng cho lưu trữ file CSV/Text).
-     * 
-     * @return "THEORY" hoặc "PRACTICE"
-     */
-    public abstract String getTypeCode();
-
-    /**
-     * Tỷ trọng điểm quá trình của môn học.
-     */
-    public abstract double getProcessWeight();
-
-    /**
-     * Tỷ trọng điểm cuối kỳ của môn học.
-     */
-    public abstract double getFinalExamWeight();
-
-    // ==================== KIỂM TRA TÍNH HỢP LỆ (VALIDATION) ====================
-
-    /**
-     * Kiểm tra mã môn học có hợp lệ không (không null, sau khi trim không rỗng).
-     */
-    public static boolean isValidCourseId(String courseId) {
-        return courseId != null && !courseId.trim().isEmpty();
-    }
-
-    /**
-     * Kiểm tra tên môn học có hợp lệ không (không null, sau khi trim không rỗng).
-     */
-    public static boolean isValidCourseName(String courseName) {
-        return courseName != null && !courseName.trim().isEmpty();
-    }
-
-    /**
-     * Kiểm tra số tín chỉ có thuộc miền nguyên 1–6 hay không.
-     */
-    public static boolean isValidCredits(int credits) {
-        return credits >= MIN_CREDITS && credits <= MAX_CREDITS;
-    }
-
-    // ==================== GETTER & SETTER ====================
+    // ==================== CÁC PHƯƠNG THỨC THEO ĐÚNG CLASS DIAGRAM ====================
 
     public String getCourseId() {
         return this.courseId;
@@ -112,15 +43,66 @@ public abstract class Course implements Serializable {
         return this.courseName;
     }
 
+    public int getCredits() {
+        return this.credits;
+    }
+
+    /**
+     * Phương thức đa hình tính điểm tổng kết theo đúng Class Diagram:
+     * + calculateFinalScore(process: double, exam: double): double
+     */
+    public abstract double calculateFinalScore(double process, double exam);
+
+    /**
+     * Phương thức đa hình lấy loại môn học theo đúng Class Diagram:
+     * + getCourseType(): String
+     */
+    public abstract String getCourseType();
+
+    // ==================== HỖ TRỢ ĐIỂM THIẾU (NULL) & TƯƠNG THÍCH ====================
+
+    /**
+     * Nạp chồng calculateFinalScore hỗ trợ xử lý khi điểm thành phần bị thiếu (null),
+     * trả về null khi thiếu một thành phần (theo đúng yêu cầu checklist đề P05).
+     */
+    public Double calculateFinalScore(Double process, Double exam) {
+        if (process == null || exam == null) {
+            return null;
+        }
+        return this.calculateFinalScore(process.doubleValue(), exam.doubleValue());
+    }
+
+    /**
+     * Alias phương thức tính điểm để tương thích toàn diện với các module.
+     */
+    public Double calculateFinalGrade(Double processGrade, Double finalExamGrade) {
+        return this.calculateFinalScore(processGrade, finalExamGrade);
+    }
+
+    public String getTypeCode() {
+        return "LÝ THUYẾT".equalsIgnoreCase(this.getCourseType()) || "THEORY".equalsIgnoreCase(this.getCourseType()) 
+                ? "THEORY" : "PRACTICE";
+    }
+
+    // ==================== VALIDATION & SETTERS ====================
+
+    public static boolean isValidCourseId(String courseId) {
+        return courseId != null && !courseId.trim().isEmpty();
+    }
+
+    public static boolean isValidCourseName(String courseName) {
+        return courseName != null && !courseName.trim().isEmpty();
+    }
+
+    public static boolean isValidCredits(int credits) {
+        return credits >= MIN_CREDITS && credits <= MAX_CREDITS;
+    }
+
     public void setCourseName(String courseName) {
         if (!isValidCourseName(courseName)) {
             throw new IllegalArgumentException("Tên môn học không được để trống.");
         }
         this.courseName = courseName.trim();
-    }
-
-    public int getCredits() {
-        return this.credits;
     }
 
     public void setCredits(int credits) {
@@ -129,8 +111,6 @@ public abstract class Course implements Serializable {
         }
         this.credits = credits;
     }
-
-    // ==================== EQUALS & HASHCODE & TOSTRING ====================
 
     @Override
     public boolean equals(Object obj) {
@@ -152,6 +132,6 @@ public abstract class Course implements Serializable {
     @Override
     public String toString() {
         return String.format("[%s] %s - %s (%d tín chỉ)", 
-                this.getTypeCode(), this.courseId, this.courseName, this.credits);
+                this.getCourseType(), this.courseId, this.courseName, this.credits);
     }
 }

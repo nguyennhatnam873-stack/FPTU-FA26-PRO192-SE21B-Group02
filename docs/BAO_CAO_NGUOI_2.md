@@ -31,51 +31,31 @@
 classDiagram
     class Course {
         <<abstract>>
-        -String courseId
-        -String courseName
-        -int credits
-        +Course(String courseId, String courseName, int credits)
-        +calculateFinalGrade(Double processGrade, Double finalExamGrade)* Double
-        +getCourseType()* String
-        +getTypeCode()* String
-        +getProcessWeight()* double
-        +getFinalExamWeight()* double
+        -courseId: String
+        -courseName: String
+        -credits: int
         +getCourseId() String
         +getCourseName() String
-        +setCourseName(String name) void
         +getCredits() int
-        +setCredits(int credits) void
-        +isValidCredits(int credits)$ boolean
+        +calculateFinalScore(process: double, exam: double)* double
+        +getCourseType()* String
     }
 
     class TheoryCourse {
-        +PROCESS_WEIGHT = 0.30
-        +FINAL_EXAM_WEIGHT = 0.70
-        +TheoryCourse(String id, String name, int credits)
-        +calculateFinalGrade(Double processGrade, Double finalExamGrade) Double
+        +calculateFinalScore(process: double, exam: double) double
         +getCourseType() String
-        +getTypeCode() String
     }
 
     class PracticeCourse {
-        +PROCESS_WEIGHT = 0.50
-        +FINAL_EXAM_WEIGHT = 0.50
-        +PracticeCourse(String id, String name, int credits)
-        +calculateFinalGrade(Double processGrade, Double finalExamGrade) Double
+        +calculateFinalScore(process: double, exam: double) double
         +getCourseType() String
-        +getTypeCode() String
     }
 
     class CourseManager {
-        -Map~String, Course~ courses
-        -CourseUsageChecker usageChecker
-        +addCourse(Course course) void
-        +findCourseById(String id) Course
+        -courses: List~Course~
+        +addCourse(course: Course) void
+        +findCourse(id: String) Course
         +getAllCourses() List~Course~
-        +canModifyCourse(String id) boolean
-        +updateCourseCredits(String id, int newCredits) void
-        +parseAndValidateCredits(String input)$ int
-        +createCourse(String type, String id, String name, int credits)$ Course
     }
 
     Course <|-- TheoryCourse : Kế thừa (Inheritance)
