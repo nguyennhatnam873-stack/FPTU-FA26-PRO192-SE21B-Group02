@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Checklist PRO192 — P05 Quản lý sinh viên và bảng điểm</title>
+<style>
+:root{
+  --bg:#f7f7f5; --card:#ffffff; --text:#1a1a1a; --muted:#6b6b6b;
+  --accent:#2f6f4f; --accent-bg:#e7f2ec; --border:#e2e0da;
+  --done-bg:#eef7f0;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#17181a; --card:#212226; --text:#eceae4; --muted:#9a9a9a;
+    --accent:#7fd1a5; --accent-bg:#1e2b23; --border:#33343a; --done-bg:#1b2620;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#17181a; --card:#212226; --text:#eceae4; --muted:#9a9a9a;
+  --accent:#7fd1a5; --accent-bg:#1e2b23; --border:#33343a; --done-bg:#1b2620;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  min-height:100%;
+}
+.wrap{max-width:760px; margin:0 auto; padding:20px 16px 48px;}
+h1{font-size:1.3rem; margin:4px 0 2px;}
+.sub{color:var(--muted); font-size:.88rem; margin-bottom:16px; line-height:1.5;}
+.overall{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:16px;}
+.bar{height:8px; background:var(--border); border-radius:6px; overflow:hidden; margin-top:8px;}
+.bar-fill{height:100%; background:var(--accent); width:0%; transition:width .25s;}
+.tabs{display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:14px; -webkit-overflow-scrolling:touch;}
+.tab{flex:0 0 auto; padding:7px 12px; border-radius:999px; border:1px solid var(--border); background:var(--card); color:var(--text); font-size:.82rem; cursor:pointer; white-space:nowrap;}
+.tab.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+.person{display:none;}
+.person.active{display:block;}
+.role{background:var(--accent-bg); border-radius:10px; padding:10px 12px; margin-bottom:14px; font-size:.86rem; line-height:1.5;}
+.role small{display:block; margin-top:6px; color:var(--muted);}
+.phase{margin-bottom:18px;}
+.phase h2{font-size:.95rem; margin:0 0 8px; color:var(--accent);}
+.task{display:flex; gap:10px; align-items:flex-start; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:7px; cursor:pointer; font-size:.9rem; line-height:1.45;}
+.task.done{background:var(--done-bg);}
+.task.done span{text-decoration:line-through; color:var(--muted);}
+.task input{margin-top:3px; flex:0 0 auto; width:16px; height:16px;}
+footer{color:var(--muted); font-size:.78rem; text-align:center; margin-top:24px; line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>✅ Checklist PRO192 — Đề P05</h1>
+  <div class="sub">Quản lý sinh viên và bảng điểm (Java console, JDK 8, NetBeans 17). Thời lượng 14 ngày, 5 thành viên, mỗi người 11 việc.<br>Đánh dấu công việc đã xong — trạng thái lưu trên trình duyệt này.</div>
+
+  <div class="overall">
+    <strong id="overallPct">0%</strong> hoàn thành toàn nhóm
+    <div class="bar"><div class="bar-fill" id="overallBar"></div></div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="people"></div>
+
+  <footer>Mẹo: mỗi thành viên nên tự mở tab của mình để tick task đúng trên máy mình.<br>Mỗi người cần hiểu và giải thích được phần code của mình khi bảo vệ.</footer>
+</div>
+
+<script>
+const DATA = [
+  {
+    id:"A", name:"Người 1 — Trưởng nhóm / Bảng điểm", role:"Điều phối, quản lý repo và tiến độ; phụ trách code bảng điểm, lọc môn đủ điểm, trung bình có trọng số tín chỉ.",
+    tests:"Ca kiểm thử phụ trách: D02, D04, D06, D07",
+    phases:[
+      {name:"D1–D2 — Nền tảng", tasks:[
+        "Tạo repo FPTU-FA26-PRO192-SE21B-GroupXX, mời khoand96 làm collaborator, cấu hình project NetBeans 17 dùng JDK 8",
+        "Chủ trì họp chốt: mô hình OOP (một phương án), cách biểu diễn điểm thiếu (Double null), giao diện gọi tính điểm, định dạng file; chốt bảng phân công kèm MSSV",
+        "Vẽ sơ đồ lớp ban đầu và tạo sẵn /docs/ai_logs/AI_INTERACTION_LOG.md"
+      ]},
+      {name:"D3–D7 — Lập trình", tasks:[
+        "Code phần tổng hợp bảng điểm: lọc môn đủ điểm, cộng tín chỉ, trung bình có trọng số từ điểm chưa làm tròn",
+        "Xử lý CHUA_CO_DIEM_TRUNG_BINH khi chưa có môn đủ điểm (không chia cho 0, không hiện 0), hiển thị trung bình tạm tính và số môn/tín chỉ đủ trên tổng",
+        "Ghép các phần của 5 người thành luồng console chạy xuyên suốt; kiểm tra trên dữ liệu mẫu"
+      ]},
+      {name:"D8–D11 — Hoàn thiện & kiểm thử", tasks:[
+        "Chạy và ghi kết quả thực tế các ca D02, D04, D06, D07 (D07: trung bình thô 8,0045 → hiển thị 8,00)",
+        "Tổng hợp bảng kiểm thử chung (ít nhất 12 ca: đầu vào, mong đợi, thực tế, đạt/chưa đạt, người thực hiện); tổ chức kiểm thử chéo",
+        "Theo dõi tiến độ ở mốc D7 và D11, review code đúng quy ước (private, this., super.)"
+      ]},
+      {name:"D12–D14 — Nộp bài & bảo vệ", tasks:[
+        "Ghép báo cáo PDF ngắn từ phần của mọi người, kiểm tra sơ đồ lớp khớp code, chốt checklist gói nộp và nộp đúng hạn"
+      ]}
+    ]
+  },
+  {
+    id:"B", name:"Người 2 — Môn học & đánh giá", role:"Phụ trách hai loại đánh giá, mô hình môn học, kiểm tra tín chỉ; là phần có lời gọi đa hình chính của đề.",
+    tests:"Ca kiểm thử phụ trách: D01, D07, D11",
+    phases:[
+      {name:"D1–D2 — Nền tảng", tasks:[
+        "Cùng nhóm chốt phương án OOP (Course abstract hoặc EvaluationPolicy) và thống nhất chữ ký phương thức tính điểm",
+        "Tạo khung lớp môn học: mã, tên, tín chỉ, loại môn; mọi thuộc tính private"
+      ]},
+      {name:"D3–D7 — Lập trình", tasks:[
+        "Cài đặt hai công thức: lý thuyết 0,30/0,70 và thực hành 0,50/0,50, trả null khi thiếu một thành phần",
+        "Kiểm tra môn học: mã duy nhất, tên không rỗng, tín chỉ nguyên 1–6, trim khoảng trắng đầu/cuối",
+        "Thêm và tìm môn theo mã, xem danh sách môn (phần nghiệp vụ tách khỏi menu)"
+      ]},
+      {name:"D8–D11 — Hoàn thiện & kiểm thử", tasks:[
+        "Chạy và ghi kết quả thực tế ca D01 (6,60 và 7,00), D07, D11 (tín chỉ 0, 1,5, trùng mã LT101)",
+        "Đảm bảo không đổi loại môn hoặc tín chỉ sau khi đã có kết quả",
+        "Phối hợp Người 5 để lưu/đọc đúng loại đánh giá của từng môn"
+      ]},
+      {name:"D12–D14 — Nộp bài & bảo vệ", tasks:[
+        "Viết phần báo cáo giải thích quan hệ lớp và chỉ rõ vị trí gọi đa hình trong luồng xem bảng điểm; ghi AI log phần mình",
+        "Chuẩn bị giải thích phần mình, một ca test và sẵn sàng sửa một thay đổi nhỏ khi vấn đáp"
+      ]}
+    ]
+  },
+  {
+    id:"C", name:"Người 3 — Sinh viên & cặp SV–môn", role:"Phụ trách hồ sơ sinh viên và thao tác ghi nhận kết quả cho cặp sinh viên–môn học.",
+    tests:"Ca kiểm thử phụ trách: D05, D06",
+    phases:[
+      {name:"D1–D2 — Nền tảng", tasks:[
+        "Cùng nhóm chốt cách biểu diễn điểm thiếu và quan hệ GradeRecord giữa sinh viên và môn",
+        "Tạo khung lớp sinh viên (MSSV, họ tên) và lớp GradeRecord, mọi thuộc tính private"
+      ]},
+      {name:"D3–D7 — Lập trình", tasks:[
+        "Thêm và tìm sinh viên theo MSSV, xem danh sách sinh viên; kiểm tra MSSV duy nhất, họ tên không rỗng, trim đầu vào",
+        "Tạo kết quả cho một cặp SV–môn: chỉ cho phép khi cả sinh viên và môn đã tồn tại, không tự tạo mã khi gõ sai",
+        "Mỗi cặp MSSV–mã môn chỉ có một kết quả; nhập lại cặp đã có thì chuyển sang cập nhật rõ ràng, không tạo dòng thứ hai"
+      ]},
+      {name:"D8–D11 — Hoàn thiện & kiểm thử", tasks:[
+        "Chạy và ghi kết quả thực tế ca D05 (−0,01; 10,01; NaN; mã không tồn tại; dữ liệu mẫu giữ nguyên) và D06",
+        "Đảm bảo thao tác bị từ chối không làm đổi một phần dữ liệu (kiểm tra điều kiện trước khi cập nhật)",
+        "Không cho xóa sinh viên đã có kết quả"
+      ]},
+      {name:"D12–D14 — Nộp bài & bảo vệ", tasks:[
+        "Viết phần báo cáo về quan hệ sinh viên – môn – kết quả; ghi AI log phần mình",
+        "Chuẩn bị giải thích phần mình, một ca test và sẵn sàng sửa một thay đổi nhỏ khi vấn đáp"
+      ]}
+    ]
+  },
+  {
+    id:"D", name:"Người 4 — Nhập & cập nhật điểm", role:"Phụ trách nhập và cập nhật điểm thành phần, trạng thái thiếu điểm, kiểm tra miền điểm.",
+    tests:"Ca kiểm thử phụ trách: D03, D04, D05, D10",
+    phases:[
+      {name:"D1–D2 — Nền tảng", tasks:[
+        "Cùng nhóm thống nhất: điểm thiếu là Double null, điểm 0 là hợp lệ, hằng số CHUA_DU_DIEM",
+        "Thiết kế luồng nhập/cập nhật điểm trên giấy: giữ điểm cũ, đặt lại thành thiếu, nhập điểm mới"
+      ]},
+      {name:"D3–D7 — Lập trình", tasks:[
+        "Viết hàm kiểm tra miền điểm [0; 10]: từ chối số âm, lớn hơn 10, NaN, vô cực, chuỗi sai kiểu (tách khỏi menu để test trực tiếp)",
+        "Nhập và cập nhật hai điểm thành phần; cho phép để trống điểm chưa có",
+        "Thao tác rõ ràng để giữ điểm cũ hoặc đặt lại thành thiếu; không âm thầm đổi ô trống thành 0"
+      ]},
+      {name:"D8–D11 — Hoàn thiện & kiểm thử", tasks:[
+        "Chạy và ghi kết quả thực tế ca D03 (LT102 CHUA_DU_DIEM, Bình CHUA_CO_DIEM_TRUNG_BINH), D04 (7,00 và 6,83), D05",
+        "Chạy ca D10: quá trình 0, cuối kỳ thiếu, lưu rồi mở lại vẫn đúng (phối hợp Người 5)",
+        "Hiển thị trạng thái đủ điểm hoặc chưa đủ điểm của từng kết quả trong màn hình xem kết quả môn"
+      ]},
+      {name:"D12–D14 — Nộp bài & bảo vệ", tasks:[
+        "Viết phần báo cáo về điểm thiếu so với điểm 0 và quy tắc kiểm tra miền; ghi AI log phần mình",
+        "Chuẩn bị giải thích phần mình, một ca test và sẵn sàng sửa một thay đổi nhỏ khi vấn đáp"
+      ]}
+    ]
+  },
+  {
+    id:"E", name:"Người 5 — Lưu/đọc file & CSV", role:"Phụ trách lưu và đọc dữ liệu khi khởi động lại, xuất bảng điểm CSV, menu console.",
+    tests:"Ca kiểm thử phụ trách: D08, D09, D10",
+    phases:[
+      {name:"D1–D2 — Nền tảng", tasks:[
+        "Cùng nhóm chốt định dạng lưu: file văn bản hoặc Java Serialization; ghi rõ vào README",
+        "Chuẩn bị file dữ liệu mẫu (2 SV, 3 môn, 3 kết quả) và quy ước đường dẫn tương đối"
+      ]},
+      {name:"D3–D7 — Lập trình", tasks:[
+        "Lưu và đọc đủ sinh viên, môn học, loại đánh giá, tín chỉ, hai điểm thành phần; điểm thiếu vẫn là thiếu, điểm 0 vẫn là 0",
+        "Lần chạy đầu: bắt đầu rỗng hoặc nạp mẫu; khi đã có dữ liệu thì không nạp mẫu đè lên",
+        "Xử lý lỗi file: file hỏng thì báo lỗi, không ghi đè file cũ bằng dữ liệu rỗng; ghi lỗi thì báo rõ chưa lưu và cho thử lại"
+      ]},
+      {name:"D8–D11 — Hoàn thiện & kiểm thử", tasks:[
+        "Xuất CSV: dấu phẩy phân cách, dấu chấm thập phân, quote/escape đúng, ô thiếu để trống kèm trạng thái, điểm 0 xuất 0.00",
+        "Chạy và ghi kết quả thực tế ca D08, D09 (lưu → thoát → mở lại), D10",
+        "Xây menu console lặp lại, có lựa chọn thoát, thông báo lỗi để nhập lại hoặc quay về menu"
+      ]},
+      {name:"D12–D14 — Nộp bài & bảo vệ", tasks:[
+        "Viết README (thành viên, môi trường, build/chạy, vị trí file lưu, giới hạn) và tạo file JAR từ đúng mã nguồn đã nộp",
+        "Chuẩn bị giải thích phần mình, một ca test và sẵn sàng sửa một thay đổi nhỏ khi vấn đáp; ghi AI log phần mình"
+      ]}
+    ]
+  }
+];
+
+const STORAGE_KEY = "pro192_p05_checklist_v1";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch(e) { state = {}; }
+
+function save(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+}
+
+function allTaskIds(){
+  const ids = [];
+  DATA.forEach(p => p.phases.forEach((ph,pi) => ph.tasks.forEach((t,ti) => {
+    ids.push(p.id + "_" + pi + "_" + ti);
+  })));
+  return ids;
+}
+
+function updateOverall(){
+  const ids = allTaskIds();
+  const done = ids.filter(id => state[id]).length;
+  const pct = ids.length ? Math.round(done/ids.length*100) : 0;
+  document.getElementById("overallPct").textContent = pct + "%";
+  document.getElementById("overallBar").style.width = pct + "%";
+}
+
+function personPct(p){
+  let total = 0, done = 0;
+  p.phases.forEach((ph,pi) => ph.tasks.forEach((t,ti) => {
+    total++; if (state[p.id + "_" + pi + "_" + ti]) done++;
+  }));
+  return done + "/" + total;
+}
+
+function render(){
+  const tabsEl = document.getElementById("tabs");
+  const peopleEl = document.getElementById("people");
+  tabsEl.innerHTML = "";
+  peopleEl.innerHTML = "";
+
+  DATA.forEach((p) => {
+    const tab = document.createElement("button");
+    tab.className = "tab" + (p.id===currentTab ? " active" : "");
+    tab.textContent = p.name.split(" — ")[0];
+    tab.onclick = () => switchTab(p.id);
+    tab.dataset.tab = p.id;
+    tabsEl.appendChild(tab);
+
+    const section = document.createElement("div");
+    section.className = "person" + (p.id===currentTab ? " active" : "");
+    section.dataset.person = p.id;
+
+    const roleDiv = document.createElement("div");
+    roleDiv.className = "role";
+    roleDiv.innerHTML = "<strong>" + p.name + "</strong> (" + personPct(p) + " việc xong)<br>" + p.role + "<small>" + p.tests + "</small>";
+    section.appendChild(roleDiv);
+
+    p.phases.forEach((ph, pi) => {
+      const phaseDiv = document.createElement("div");
+      phaseDiv.className = "phase";
+      const h2 = document.createElement("h2");
+      h2.textContent = ph.name;
+      phaseDiv.appendChild(h2);
+
+      ph.tasks.forEach((t, ti) => {
+        const id = p.id + "_" + pi + "_" + ti;
+        const row = document.createElement("div");
+        row.className = "task" + (state[id] ? " done" : "");
+        row.onclick = (e) => { if(e.target.tagName !== "INPUT") toggle(id); };
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = !!state[id];
+        cb.onclick = (e) => { e.stopPropagation(); toggle(id); };
+
+        const span = document.createElement("span");
+        span.textContent = t;
+
+        row.appendChild(cb);
+        row.appendChild(span);
+        phaseDiv.appendChild(row);
+      });
+      section.appendChild(phaseDiv);
+    });
+
+    peopleEl.appendChild(section);
+  });
+
+  updateOverall();
+}
+
+function toggle(id){
+  state[id] = !state[id];
+  save();
+  render();
+}
+
+let currentTab = DATA[0].id;
+function switchTab(id){
+  currentTab = id;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === id));
+  document.querySelectorAll(".person").forEach(s => s.classList.toggle("active", s.dataset.person === id));
+}
+
+render();
+</script>
+</body>
+</html>
