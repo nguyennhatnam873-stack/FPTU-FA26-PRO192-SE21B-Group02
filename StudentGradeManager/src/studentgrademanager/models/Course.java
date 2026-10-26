@@ -1,0 +1,8 @@
+package studentgrademanager.models;
+
+/**
+ * Phụ trách: Người 2 — Môn học & đánh giá
+ */
+public abstract class Course {
+    // TODO: Thành viên tự viết code tại đây
+}
