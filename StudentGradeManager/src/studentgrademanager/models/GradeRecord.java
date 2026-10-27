@@ -1,64 +1,102 @@
-package studentgrademanager.models;
+package studentgrademanager.services;
 
 /**
- * Phụ trách: Người 3 (liên kết SV-Môn) & Người 4 (nghiệp vụ điểm)
+ * Phụ trách: Người 3 — Sinh viên & cặp SV–môn
  */
-public class GradeRecord {
+
+import java.util.ArrayList;
+import java.util.List;
+import studentgrademanager.models.GradeRecord;
+import studentgrademanager.models.Student;
+public class StudentManager {
     // TODO: Thành viên tự viết code tại đây
-    private Student student;
-    private Course course;
-    private Double processScore; // Dùng Double đối tượng để có thể mang giá trị null (thiếu điểm)
-    private Double examScore;    // null nếu chưa thi
+    private List<Student> students;
 
-    public GradeRecord(Student student, Course course) {
-        this.student = student;
-        this.course = course;
-        this.processScore = null; // Khởi tạo ban đầu là chưa có điểm
-        this.examScore = null;
+    public StudentManager() {
+        this.students = new ArrayList<>();
     }
 
-    public GradeRecord(Student student, Course course, Double processScore, Double examScore) {
-        this.student = student;
-        this.course = course;
-        this.processScore = processScore;
-        this.examScore = examScore;
-    }
-
-    public Student getStudent() {
-        return this.student;
-    }
-
-    public Course getCourse() {
-        return this.course;
-    }
-
-    public Double getProcessScore() {
-        return this.processScore;
-    }
-
-    public void setProcessScore(Double processScore) {
-        this.processScore = processScore;
-    }
-
-    public Double getExamScore() {
-        return this.examScore;
-    }
-
-    public void setExamScore(Double examScore) {
-        this.examScore = examScore;
-    }
-
-    // Kiểm tra đã đủ 2 đầu điểm chưa
-    public boolean isComplete() {
-        return this.processScore != null && this.examScore != null;
-    }
-
-    // Tính điểm tổng kết qua lời gọi ĐA HÌNH tới Course (Course tự tính theo loại của nó)
-    public Double getFinalScore() {
-        if (!this.isComplete()) {
-            return null; // Thiếu 1 trong 2 điểm thì chưa có điểm tổng kết (CHUA_DU_DIEM)
+    // 1. Thêm sinh viên (Kiểm tra rỗng, trim, trùng mã)
+    public boolean addStudent(String studentId, String fullName) {
+        if (studentId == null || fullName == null) {
+            return false;
         }
-        return this.course.calculateFinalGrade(this.processScore, this.examScore);
+        String cleanId = studentId.trim();
+        String cleanName = fullName.trim();
+
+        // Kiểm tra không được rỗng
+        if (cleanId.isEmpty() || cleanName.isEmpty()) {
+            System.out.println("Lỗi: MSSV và Họ tên không được để trống!");
+            return false;
+        }
+
+        // Kiểm tra trùng mã
+        if (this.findStudent(cleanId) != null) {
+            System.out.println("Lỗi: MSSV '" + cleanId + "' đã tồn tại!");
+            return false;
+        }
+
+        // Hợp lệ -> thêm mới
+        this.students.add(new Student(cleanId, cleanName));
+        return true;
+    }
+
+    // 2. Tìm sinh viên theo mã
+    public Student findStudent(String studentId) {
+        if (studentId == null) return null;
+        String cleanId = studentId.trim();
+        for (Student s : this.students) {
+            if (s.getStudentId().equalsIgnoreCase(cleanId)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    // 3. Lấy danh sách toàn bộ sinh viên
+    public List<Student> getAllStudents() {
+        return this.students;
+    }
+
+    // 4. Kiểm tra điều kiện xóa (Không cho xóa SV đã có kết quả)
+    public boolean deleteStudent(String studentId, List<GradeRecord> allRecords) {
+        Student s = this.findStudent(studentId);
+        if (s == null) {
+            System.out.println("Lỗi: Không tìm thấy sinh viên để xóa!");
+            return false;
+        }
+
+        // Kiểm tra xem sinh viên này đã có bản ghi điểm nào chưa
+        if (allRecords != null) {
+            for (GradeRecord record : allRecords) {
+                if (record.getStudent().getStudentId().equalsIgnoreCase(s.getStudentId())) {
+                    System.out.println("Lỗi: Không được xóa sinh viên đã có kết quả học tập!");
+                    return false;
+                }
+            }
+        }
+
+        this.students.remove(s);
+        System.out.println("Xóa sinh viên thành công!");
+        return true;
+    }
+
+    public synchronized void addStudent(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Đối tượng sinh viên không được null.");
+        }
+        if (this.findStudent(student.getStudentId()) != null) {
+            throw new IllegalArgumentException("MSSV '" + student.getStudentId() + "' đã tồn tại!");
+        }
+        this.students.add(student);
+    }
+
+    public int getStudentCount() {
+        return this.students.size();
+    }
+
+    public synchronized void clear() {
+        this.students.clear();
     }
 }
 
