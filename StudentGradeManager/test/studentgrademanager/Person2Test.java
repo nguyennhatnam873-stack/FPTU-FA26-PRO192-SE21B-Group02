@@ -5,10 +5,6 @@ import studentgrademanager.models.PracticeCourse;
 import studentgrademanager.models.TheoryCourse;
 import studentgrademanager.services.CourseManager;
 
-/**
- * Kiểm thử tự động cho Người 2 — Môn học & đánh giá.
- * Phụ trách các ca kiểm thử: D01, D07, D11.
- */
 public class Person2Test {
 
     private static int totalTests = 0;
@@ -52,18 +48,11 @@ public class Person2Test {
         }
     }
 
-    /**
-     * Ca D01: Cài đặt hai công thức: lý thuyết 0.30/0.70 và thực hành 0.50/0.50
-     * Với đầu vào (quá trình 8.0, cuối kỳ 6.0):
-     * - Môn lý thuyết LT101: 8.0 * 0.3 + 6.0 * 0.7 = 6.60
-     * - Môn thực hành TH101: 8.0 * 0.5 + 6.0 * 0.5 = 7.00
-     */
     private static void testD01_GradingFormulasAndPolymorphism() {
         System.out.println("--- Kiểm thử Ca D01: Đa hình tính điểm Lý thuyết & Thực hành ---");
         Course ltCourse = new TheoryCourse("LT101", "Lý thuyết Hướng đối tượng", 3);
         Course thCourse = new PracticeCourse("TH101", "Thực hành Java", 2);
 
-        // Kiểm thử theo đúng tên phương thức trong Class Diagram: calculateFinalScore(double, double)
         double ltScorePrimitive = ltCourse.calculateFinalScore(8.0, 6.0);
         double thScorePrimitive = thCourse.calculateFinalScore(8.0, 6.0);
         boolean passLTPrimitive = Math.abs(ltScorePrimitive - 6.60) < 0.0001;
@@ -85,9 +74,6 @@ public class Person2Test {
                 String.format("Kỳ vọng: 7.00 | Thực tế: %.2f", thGrade));
     }
 
-    /**
-     * Ca D01 (Bổ sung): Trả về null khi thiếu một thành phần (Double null)
-     */
     private static void testD01_NullComponents() {
         System.out.println("--- Kiểm thử Ca D01 (Bổ sung): Xử lý thiếu điểm thành phần ---");
         Course lt = new TheoryCourse("LT102", "Cơ sở dữ liệu", 3);
@@ -102,21 +88,11 @@ public class Person2Test {
         assertTrue("TH thiếu cả hai", th.calculateFinalGrade(null, null) == null, "Trả về null khi cả 2 null");
     }
 
-    /**
-     * Ca D07: Đóng góp của Course vào luồng tính bảng điểm trung bình có trọng số tín chỉ.
-     * Kiểm tra tính đa hình khi duyệt qua danh sách Course và lấy tín chỉ * điểm tổng kết.
-     */
     private static void testD07_TranscriptWeightedAverageContribution() {
         System.out.println("--- Kiểm thử Ca D07: Tính đa hình trong GPA có trọng số tín chỉ ---");
         Course c1 = new TheoryCourse("PRO192", "Object-Oriented Programming", 3);
         Course c2 = new PracticeCourse("LAB211", "OOP Lab", 2);
 
-        // Giả lập điểm:
-        // c1 (LT): QT 8.5, CK 7.8 -> 8.5*0.3 + 7.8*0.7 = 2.55 + 5.46 = 8.01
-        // c2 (TH): QT 8.0, CK 8.0 -> 8.0*0.5 + 8.0*0.5 = 8.00
-        // Weighted sum = (8.01 * 3) + (8.00 * 2) = 24.03 + 16.00 = 40.03
-        // Total credits = 3 + 2 = 5
-        // GPA = 40.03 / 5 = 8.006 -> hiển thị làm tròn 8.01
         Double g1 = c1.calculateFinalGrade(8.5, 7.8);
         Double g2 = c2.calculateFinalGrade(8.0, 8.0);
 
@@ -129,9 +105,6 @@ public class Person2Test {
                 String.format("GPA thực tế: %.4f | Tổng tín chỉ: %d", gpa, totalCredits));
     }
 
-    /**
-     * Ca D11: Kiểm tra môn học - Tín chỉ = 0 (phải bị từ chối)
-     */
     private static void testD11_InvalidCreditsZero() {
         System.out.println("--- Kiểm thử Ca D11: Từ chối tín chỉ = 0 ---");
         boolean caughtInParser = false;
@@ -151,9 +124,6 @@ public class Person2Test {
         assertTrue("D11 - Constructor từ chối tín chỉ 0", caughtInConstructor, "Bắt ngoại lệ IllegalArgumentException");
     }
 
-    /**
-     * Ca D11: Kiểm tra môn học - Tín chỉ = 1.5 (không phải số nguyên 1-6, phải bị từ chối)
-     */
     private static void testD11_InvalidCreditsDecimal() {
         System.out.println("--- Kiểm thử Ca D11: Từ chối tín chỉ là số thập phân 1.5 ---");
         boolean caughtDecimalDot = false;
@@ -173,9 +143,6 @@ public class Person2Test {
         assertTrue("D11 - Từ chối tín chỉ 1,5", caughtDecimalComma, "Bắt ngoại lệ số thập phân dấu phẩy");
     }
 
-    /**
-     * Ca D11: Kiểm tra môn học - Trùng mã LT101 (phải bị từ chối)
-     */
     private static void testD11_DuplicateCourseCode() {
         System.out.println("--- Kiểm thử Ca D11: Từ chối trùng mã môn LT101 ---");
         CourseManager manager = new CourseManager();
@@ -201,9 +168,6 @@ public class Person2Test {
         assertTrue("D11 - Từ chối trùng mã lt101 (case-insensitive)", caughtDuplicateCase, "Bắt ngoại lệ trùng mã viết thường");
     }
 
-    /**
-     * Ca D11 (Bổ sung): Tên môn rỗng hoặc mã rỗng, trim khoảng trắng
-     */
     private static void testD11_EmptyCourseNameAndId() {
         System.out.println("--- Kiểm thử Ca D11 (Bổ sung): Rỗng và Trim khoảng trắng ---");
         boolean caughtEmptyName = false;
@@ -220,16 +184,12 @@ public class Person2Test {
                 "Mã môn chuẩn hóa UPPERCASE, tên môn được trim khoảng trắng");
     }
 
-    /**
-     * Bảo vệ: Không đổi loại môn hoặc tín chỉ sau khi đã có kết quả
-     */
     private static void testGuard_PreventModifyingCreditsAfterGrades() {
         System.out.println("--- Kiểm thử Bảo vệ: Không cho đổi tín chỉ khi đã có kết quả ---");
         CourseManager manager = new CourseManager();
         Course course = new TheoryCourse("MAE101", "Toán cao cấp", 3);
         manager.addCourse(course);
 
-        // Giả lập checker: MAE101 đã có điểm sinh viên ghi nhận
         manager.setUsageChecker(new CourseManager.CourseUsageChecker() {
             @Override
             public boolean hasGrades(String courseId) {
@@ -249,9 +209,6 @@ public class Person2Test {
         assertTrue("Tín chỉ vẫn giữ nguyên là 3", course.getCredits() == 3, "Tín chỉ không bị đổi");
     }
 
-    /**
-     * Phối hợp Người 5: Tạo Course từ loại chuỗi (THEORY / PRACTICE)
-     */
     private static void testFactory_CreateCourseCoordinationWithPerson5() {
         System.out.println("--- Kiểm thử Phối hợp Người 5: Factory method createCourse ---");
         Course lt = CourseManager.createCourse("THEORY", "MAS291", "Xác suất thống kê", 3);

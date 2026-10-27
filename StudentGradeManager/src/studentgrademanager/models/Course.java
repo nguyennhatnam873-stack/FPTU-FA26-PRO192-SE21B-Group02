@@ -3,10 +3,6 @@ package studentgrademanager.models;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * Lớp trừu tượng Course theo đúng Class Diagram đề tài P05.
- * Phụ trách: Người 2 — Môn học & đánh giá
- */
 public abstract class Course implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -33,8 +29,6 @@ public abstract class Course implements Serializable {
         this.credits = credits;
     }
 
-    // ==================== CÁC PHƯƠNG THỨC THEO ĐÚNG CLASS DIAGRAM ====================
-
     public String getCourseId() {
         return this.courseId;
     }
@@ -47,24 +41,16 @@ public abstract class Course implements Serializable {
         return this.credits;
     }
 
-    /**
-     * Phương thức đa hình tính điểm tổng kết theo đúng Class Diagram:
-     * + calculateFinalScore(process: double, exam: double): double
-     */
     public abstract double calculateFinalScore(double process, double exam);
 
-    /**
-     * Phương thức đa hình lấy loại môn học theo đúng Class Diagram:
-     * + getCourseType(): String
-     */
     public abstract String getCourseType();
 
-    // ==================== HỖ TRỢ ĐIỂM THIẾU (NULL) & TƯƠNG THÍCH ====================
+    public abstract String getTypeCode();
 
-    /**
-     * Nạp chồng calculateFinalScore hỗ trợ xử lý khi điểm thành phần bị thiếu (null),
-     * trả về null khi thiếu một thành phần (theo đúng yêu cầu checklist đề P05).
-     */
+    public abstract double getProcessWeight();
+
+    public abstract double getFinalExamWeight();
+
     public Double calculateFinalScore(Double process, Double exam) {
         if (process == null || exam == null) {
             return null;
@@ -72,19 +58,9 @@ public abstract class Course implements Serializable {
         return this.calculateFinalScore(process.doubleValue(), exam.doubleValue());
     }
 
-    /**
-     * Alias phương thức tính điểm để tương thích toàn diện với các module.
-     */
     public Double calculateFinalGrade(Double processGrade, Double finalExamGrade) {
         return this.calculateFinalScore(processGrade, finalExamGrade);
     }
-
-    public String getTypeCode() {
-        return "LÝ THUYẾT".equalsIgnoreCase(this.getCourseType()) || "THEORY".equalsIgnoreCase(this.getCourseType()) 
-                ? "THEORY" : "PRACTICE";
-    }
-
-    // ==================== VALIDATION & SETTERS ====================
 
     public static boolean isValidCourseId(String courseId) {
         return courseId != null && !courseId.trim().isEmpty();
@@ -113,20 +89,20 @@ public abstract class Course implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null || !(obj instanceof Course)) {
+        if (o == null || !(o instanceof Course)) {
             return false;
         }
-        Course other = (Course) obj;
-        return this.courseId.equalsIgnoreCase(other.courseId);
+        Course course = (Course) o;
+        return Objects.equals(this.courseId, course.courseId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.courseId.toUpperCase());
+        return Objects.hash(this.courseId);
     }
 
     @Override
