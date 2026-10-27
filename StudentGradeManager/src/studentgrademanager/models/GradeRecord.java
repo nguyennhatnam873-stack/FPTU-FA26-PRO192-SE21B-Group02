@@ -55,10 +55,12 @@ public class GradeRecord {
 
     // Tính điểm tổng kết qua lời gọi ĐA HÌNH tới Course (Course tự tính theo loại của nó)
     public Double getFinalScore() {
-        if (!this.isComplete()) {
-            return null; // Thiếu 1 trong 2 điểm thì chưa có điểm tổng kết (CHUA_DU_DIEM)
-        }
-        return this.course.calculateFinalScore(this.processScore, this.examScore);
+    if (!this.isComplete()) {
+        return null;
+    }
+    return this.course.calculateFinalGrade(this.processScore, this.examScore);
+}
+
     }
 }
 
