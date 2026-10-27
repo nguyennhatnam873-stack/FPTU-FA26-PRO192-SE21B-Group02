@@ -6,8 +6,8 @@ package studentgrademanager.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import model.GradeRecord;
-import model.Student;
+import studentgrademanager.models.GradeRecord;
+import studentgrademanager.models.Student;
 public class StudentManager {
     // TODO: Thành viên tự viết code tại đây
     private List<Student> students;
