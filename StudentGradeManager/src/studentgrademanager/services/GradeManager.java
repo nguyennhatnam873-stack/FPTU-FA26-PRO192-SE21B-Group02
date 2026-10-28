@@ -1,71 +1,42 @@
 package studentgrademanager.services;
 
-<<<<<<< HEAD
 import java.io.Serializable;
-=======
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import studentgrademanager.models.Course;
 import studentgrademanager.models.GradeRecord;
 import studentgrademanager.models.Student;
 
-<<<<<<< HEAD
+/**
+ * Lớp dịch vụ quản lý Điểm số và Kết quả học tập.
+ * Phụ trách: Người 4 — Nhập & cập nhật điểm
+ * 
+ * Chuẩn môn học: JDK 8, NetBeans 17, mọi thuộc tính private,
+ * viết tường minh this. và super. khi truy cập thành viên.
+ */
 public class GradeManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private List<GradeRecord> records;
-=======
-/**
- * Lớp dịch vụ quản lý Điểm số và Kết quả học tập.
- * Phụ trách: Người 4 — Nhập & cập nhật điểm; Người 3 — Cặp SV–Môn
- */
-public class GradeManager {
     public static final double MIN_SCORE = 0.0;
     public static final double MAX_SCORE = 10.0;
+    public static final String CHUA_DU_DIEM = "CHUA_DU_DIEM";
+    public static final String DU_DIEM = "DU_DIEM";
 
     private final List<GradeRecord> records;
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
 
     public GradeManager() {
         this.records = new ArrayList<GradeRecord>();
     }
 
-<<<<<<< HEAD
-    public synchronized GradeRecord addOrUpdateGrade(Student student, Course course, Double processScore, Double examScore) {
-        if (student == null) {
-            throw new IllegalArgumentException("Sinh viên không được để null.");
-        }
-        if (course == null) {
-            throw new IllegalArgumentException("Môn học không được để null.");
-        }
-        if (!GradeRecord.isValidScore(processScore)) {
-            throw new IllegalArgumentException("Điểm quá trình phải nằm trong đoạn [0, 10] hoặc null.");
-        }
-        if (!GradeRecord.isValidScore(examScore)) {
-            throw new IllegalArgumentException("Điểm cuối kỳ phải nằm trong đoạn [0, 10] hoặc null.");
-        }
-
-        GradeRecord existing = this.findRecord(student.getStudentId(), course.getCourseId());
-        if (existing != null) {
-            existing.setProcessScore(processScore);
-            existing.setExamScore(examScore);
-            return existing;
-        }
-
-        GradeRecord newRecord = new GradeRecord(student, course, processScore, examScore);
-        this.records.add(newRecord);
-        return newRecord;
-    }
-
-=======
     // ==================== VALIDATION MIỀN ĐIỂM ====================
 
     /**
      * Kiểm tra tính hợp lệ của giá trị điểm số.
      * Điểm hợp lệ phải:
-     * - Có thể null (đại diện cho điểm thiếu / chưa thi).
+     * - Có thể null (đại diện cho điểm thiếu / chưa có).
+     * - Điểm 0.0 là hợp lệ và khác hoàn toàn với điểm thiếu.
      * - Nếu không null: không NaN, không vô cực, thuộc đoạn [0.0, 10.0].
      * 
      * @param score Giá trị điểm số cần kiểm tra
@@ -79,7 +50,7 @@ public class GradeManager {
             throw new IllegalArgumentException("Điểm số không được là NaN hoặc vô cực.");
         }
         if (score < MIN_SCORE || score > MAX_SCORE) {
-            throw new IllegalArgumentException(String.format(
+            throw new IllegalArgumentException(String.format(Locale.US,
                     "Điểm số phải nằm trong khoảng [%.1f, %.1f] (giá trị nhập: %s).",
                     MIN_SCORE, MAX_SCORE, score));
         }
@@ -87,44 +58,63 @@ public class GradeManager {
 
     /**
      * Parse điểm từ chuỗi nhập vào.
-     * Chuỗi rỗng hoặc null hoặc "EMPTY" -> trả về null (điểm thiếu).
+     * Chuỗi null, rỗng, "-", "EMPTY", "NULL" -> trả về null (điểm thiếu).
+     * Điểm số có thể nhập dùng dấu chấm (.) hoặc dấu phẩy (,).
+     * Từ chối chuỗi sai kiểu ("abc", "NaN", "Infinity", v.v.).
      * 
-     * @param input Chuỗi nhập
-     * @return Double hợp lệ hoặc null
+     * @param input Chuỗi nhập vào
+     * @return Double hợp lệ trong [0.0, 10.0] hoặc null nếu là điểm thiếu
+     * @throws IllegalArgumentException nếu định dạng sai hoặc ngoài miền điểm
      */
     public static Double parseScore(String input) {
-        if (input == null || input.trim().isEmpty() || "EMPTY".equalsIgnoreCase(input.trim()) || "NULL".equalsIgnoreCase(input.trim())) {
+        if (input == null) {
             return null;
         }
-        String clean = input.trim().replace(',', '.');
+        String clean = input.trim();
+        if (clean.isEmpty() || "-".equals(clean) || "EMPTY".equalsIgnoreCase(clean) || "NULL".equalsIgnoreCase(clean)) {
+            return null; // Điểm thiếu
+        }
+
+        // Chặn chuỗi NaN / Infinity trước khi parseDouble nhận dạng đặc biệt
+        if ("NaN".equalsIgnoreCase(clean) || "Infinity".equalsIgnoreCase(clean)
+                || "+Infinity".equalsIgnoreCase(clean) || "-Infinity".equalsIgnoreCase(clean)) {
+            throw new IllegalArgumentException("Điểm số không được là NaN hoặc vô cực.");
+        }
+
+        clean = clean.replace(',', '.');
         double val;
         try {
             val = Double.parseDouble(clean);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Định dạng điểm không hợp lệ: '" + input + "'");
         }
+
         validateScore(val);
         return val;
+    }
+
+    /**
+     * Alias hỗ trợ tương thích với các module gọi tên parseAndValidateScore.
+     */
+    public static Double parseAndValidateScore(String input) {
+        return parseScore(input);
     }
 
     // ==================== THAO TÁC KẾT QUẢ ====================
 
     /**
      * Tìm bản ghi kết quả của cặp (MSSV, Mã môn).
+     * 
+     * @param studentId MSSV
+     * @param courseId Mã môn
+     * @return GradeRecord nếu tìm thấy, hoặc null nếu chưa có
      */
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
     public GradeRecord findRecord(String studentId, String courseId) {
         if (studentId == null || courseId == null) {
             return null;
         }
         String cleanStudentId = studentId.trim();
         String cleanCourseId = courseId.trim();
-<<<<<<< HEAD
-        for (GradeRecord r : this.records) {
-            if (r.getStudent().getStudentId().equalsIgnoreCase(cleanStudentId) &&
-                r.getCourse().getCourseId().equalsIgnoreCase(cleanCourseId)) {
-                return r;
-=======
 
         for (GradeRecord r : this.records) {
             if (r.getStudent() != null && r.getCourse() != null) {
@@ -132,52 +122,23 @@ public class GradeManager {
                         && r.getCourse().getCourseId().equalsIgnoreCase(cleanCourseId)) {
                     return r;
                 }
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
             }
         }
         return null;
     }
 
-<<<<<<< HEAD
-    public List<GradeRecord> getAllRecords() {
-        return Collections.unmodifiableList(new ArrayList<GradeRecord>(this.records));
-    }
-
-    public List<GradeRecord> getRecordsByStudent(String studentId) {
-        if (studentId == null) {
-            return Collections.emptyList();
-        }
-        String cleanId = studentId.trim();
-        List<GradeRecord> result = new ArrayList<GradeRecord>();
-        for (GradeRecord r : this.records) {
-            if (r.getStudent().getStudentId().equalsIgnoreCase(cleanId)) {
-                result.add(r);
-            }
-        }
-        return Collections.unmodifiableList(result);
-    }
-
-    public List<GradeRecord> getRecordsByCourse(String courseId) {
-        if (courseId == null) {
-            return Collections.emptyList();
-        }
-        String cleanId = courseId.trim();
-        List<GradeRecord> result = new ArrayList<GradeRecord>();
-        for (GradeRecord r : this.records) {
-            if (r.getCourse().getCourseId().equalsIgnoreCase(cleanId)) {
-                result.add(r);
-            }
-        }
-        return Collections.unmodifiableList(result);
-    }
-
-    public boolean hasGradesForCourse(String courseId) {
-=======
     /**
      * Tạo mới hoặc cập nhật kết quả cho cặp (Sinh viên, Môn học).
      * Đảm bảo:
-     * - Mỗi cặp SV–Môn chỉ có DUY NHẤT một bản ghi (không tạo dòng thứ hai).
-     * - Thao tác kiểm tra tính hợp lệ trước khi gán.
+     * - Mỗi cặp SV–Môn chỉ có DUY NHẤT một bản ghi (không tạo bản ghi trùng).
+     * - KIỂM TRA ĐIỀU KIỆN TRƯỚC KHI GÁN (Atomic): Cả 2 điểm phải hợp lệ thì mới gán.
+     *   Nếu 1 điểm sai thì không điểm nào bị thay đổi.
+     * 
+     * @param student Đối tượng sinh viên
+     * @param course Đối tượng môn học
+     * @param processScore Điểm quá trình (hợp lệ hoặc null)
+     * @param examScore Điểm cuối kỳ (hợp lệ hoặc null)
+     * @return Bản ghi kết quả sau khi tạo mới hoặc cập nhật
      */
     public synchronized GradeRecord createOrUpdateRecord(Student student, Course course, Double processScore, Double examScore) {
         if (student == null) {
@@ -187,6 +148,7 @@ public class GradeManager {
             throw new IllegalArgumentException("Môn học không tồn tại trong hệ thống.");
         }
 
+        // Kiểm tra toàn bộ điều kiện TRƯỚC khi gán (đảm bảo tính nguyên tử)
         validateScore(processScore);
         validateScore(examScore);
 
@@ -203,7 +165,16 @@ public class GradeManager {
     }
 
     /**
-     * Thêm trực tiếp bản ghi điểm (thường dùng khi nạp từ file).
+     * Alias hỗ trợ tương thích với các module gọi tên addOrUpdateGrade.
+     */
+    public synchronized GradeRecord addOrUpdateGrade(Student student, Course course, Double processScore, Double examScore) {
+        return this.createOrUpdateRecord(student, course, processScore, examScore);
+    }
+
+    /**
+     * Thêm trực tiếp bản ghi điểm (thường dùng khi nạp từ file lưu trữ).
+     * 
+     * @param record Bản ghi điểm cần thêm
      */
     public synchronized void addRecord(GradeRecord record) {
         if (record == null) {
@@ -219,81 +190,54 @@ public class GradeManager {
     }
 
     public List<GradeRecord> getRecordsByStudent(String studentId) {
-        List<GradeRecord> result = new ArrayList<GradeRecord>();
         if (studentId == null) {
-            return result;
+            return Collections.emptyList();
         }
         String cleanId = studentId.trim();
+        List<GradeRecord> result = new ArrayList<GradeRecord>();
         for (GradeRecord r : this.records) {
             if (r.getStudent() != null && r.getStudent().getStudentId().equalsIgnoreCase(cleanId)) {
                 result.add(r);
             }
         }
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     public List<GradeRecord> getRecordsByCourse(String courseId) {
-        List<GradeRecord> result = new ArrayList<GradeRecord>();
         if (courseId == null) {
-            return result;
+            return Collections.emptyList();
         }
         String cleanId = courseId.trim();
+        List<GradeRecord> result = new ArrayList<GradeRecord>();
         for (GradeRecord r : this.records) {
             if (r.getCourse() != null && r.getCourse().getCourseId().equalsIgnoreCase(cleanId)) {
                 result.add(r);
             }
         }
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     public List<GradeRecord> getAllRecords() {
-        return Collections.unmodifiableList(this.records);
+        return Collections.unmodifiableList(new ArrayList<GradeRecord>(this.records));
     }
 
     public boolean hasGrades(String courseId) {
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
         if (courseId == null) {
             return false;
         }
         String cleanId = courseId.trim();
         for (GradeRecord r : this.records) {
-<<<<<<< HEAD
-            if (r.getCourse().getCourseId().equalsIgnoreCase(cleanId)) {
-=======
             if (r.getCourse() != null && r.getCourse().getCourseId().equalsIgnoreCase(cleanId)) {
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
                 return true;
             }
         }
         return false;
     }
 
-<<<<<<< HEAD
-    public static Double parseAndValidateScore(String input) {
-        if (input == null) {
-            return null;
-        }
-        String trimmed = input.trim();
-        if (trimmed.isEmpty() || "-".equals(trimmed)) {
-            return null;
-        }
+    public boolean hasGradesForCourse(String courseId) {
+        return this.hasGrades(courseId);
+    }
 
-        double val;
-        try {
-            val = Double.parseDouble(trimmed);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Điểm số phải là số thực hợp lệ: " + trimmed);
-        }
-
-        if (Double.isNaN(val) || Double.isInfinite(val)) {
-            throw new IllegalArgumentException("Điểm không được là NaN hoặc vô cực.");
-        }
-        if (val < 0.0 || val > 10.0) {
-            throw new IllegalArgumentException("Điểm phải nằm trong khoảng từ 0.0 đến 10.0 (giá trị: " + val + ").");
-        }
-
-        return val;
-=======
     public boolean hasGradesForStudent(String studentId) {
         if (studentId == null) {
             return false;
@@ -309,7 +253,6 @@ public class GradeManager {
 
     public int getRecordCount() {
         return this.records.size();
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
     }
 
     public synchronized void clear() {

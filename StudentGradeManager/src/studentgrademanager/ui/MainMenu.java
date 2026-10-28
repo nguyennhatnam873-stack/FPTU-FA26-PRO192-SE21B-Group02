@@ -528,19 +528,28 @@ public class MainMenu {
 
         GradeRecord current = this.gradeManager.findRecord(student.getStudentId(), course.getCourseId());
         if (current != null) {
-            System.out.printf("Bản ghi điểm đã có: QT=%s, CK=%s, TK=%s\n",
-                    current.getProcessScore() == null ? "-" : current.getProcessScore(),
-                    current.getExamScore() == null ? "-" : current.getExamScore(),
-                    current.getFinalScore() == null ? "-" : current.getFinalScore());
-            System.out.println("(Để trống hoặc nhập '-' để giữ nguyên/đặt thành thiếu điểm)");
+            System.out.printf(Locale.US, "Bản ghi điểm đã có: QT=%s, CK=%s, TK=%s\n",
+                    current.getProcessScore() == null ? "CHƯA CÓ" : String.format(Locale.US, "%.2f", current.getProcessScore()),
+                    current.getExamScore() == null ? "CHƯA CÓ" : String.format(Locale.US, "%.2f", current.getExamScore()),
+                    current.getFinalScore() == null ? GradeManager.CHUA_DU_DIEM : String.format(Locale.US, "%.2f", current.getFinalScore()));
+            System.out.println("(*) Hướng dẫn: Nhập điểm mới [0-10], gõ 'K' để giữ điểm cũ, để trống hoặc nhập '-'/'EMPTY' để đặt lại thành thiếu.");
+        } else {
+            System.out.println("(*) Nhập điểm (0.0 đến 10.0), để trống / gõ 'EMPTY' nếu chưa có điểm:");
         }
 
-        String pStr = prompt("Nhập điểm quá trình (0.0 - 10.0, để trống nếu chưa có): ");
-        String eStr = prompt("Nhập điểm cuối kỳ (0.0 - 10.0, để trống nếu chưa có): ");
+        String pPrompt = (current != null && current.getProcessScore() != null)
+                ? String.format(Locale.US, "Nhập điểm quá trình [Hiện tại: %.2f | 'K' giữ nguyên | 'EMPTY'/'-' để trống]: ", current.getProcessScore())
+                : "Nhập điểm quá trình (0.0 - 10.0, để trống nếu chưa có): ";
+        String ePrompt = (current != null && current.getExamScore() != null)
+                ? String.format(Locale.US, "Nhập điểm cuối kỳ [Hiện tại: %.2f | 'K' giữ nguyên | 'EMPTY'/'-' để trống]: ", current.getExamScore())
+                : "Nhập điểm cuối kỳ (0.0 - 10.0, để trống nếu chưa có): ";
+
+        String pStr = prompt(pPrompt).trim();
+        String eStr = prompt(ePrompt).trim();
 
         try {
-            Double pScore = GradeManager.parseAndValidateScore(pStr);
-            Double eScore = GradeManager.parseAndValidateScore(eStr);
+            Double pScore = (current != null && "K".equalsIgnoreCase(pStr)) ? current.getProcessScore() : GradeManager.parseScore(pStr);
+            Double eScore = (current != null && "K".equalsIgnoreCase(eStr)) ? current.getExamScore() : GradeManager.parseScore(eStr);
 
             GradeRecord saved = this.gradeManager.addOrUpdateGrade(student, course, pScore, eScore);
             System.out.println("Ghi nhận điểm thành công: " + saved);
@@ -613,7 +622,7 @@ public class MainMenu {
             if (input.equalsIgnoreCase("K") && currentVal != null) {
                 return currentVal;
             }
-            if (input.isEmpty() || input.equalsIgnoreCase("EMPTY") || input.equalsIgnoreCase("NULL")) {
+            if (input.isEmpty() || input.equalsIgnoreCase("EMPTY") || input.equalsIgnoreCase("NULL") || input.equals("-")) {
                 return null;
             }
 
@@ -646,19 +655,19 @@ public class MainMenu {
             return;
         }
 
-        System.out.println("---------------------------------------------------------------------------------");
-        System.out.printf("%-12s | %-25s | %-7s | %-7s | %-7s | %-12s\n",
+        System.out.println("-------------------------------------------------------------------------------------------------");
+        System.out.printf("%-12s | %-25s | %-10s | %-10s | %-15s | %-15s\n",
                 "MSSV", "HỌ VÀ TÊN", "ĐIỂM QT", "ĐIỂM CK", "ĐIỂM TK", "TRẠNG THÁI");
-        System.out.println("---------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------------");
         for (GradeRecord r : records) {
             String pStr = r.getProcessScore() == null ? "-" : String.format(Locale.US, "%.2f", r.getProcessScore());
             String eStr = r.getExamScore() == null ? "-" : String.format(Locale.US, "%.2f", r.getExamScore());
             Double fScore = r.getFinalScore();
-            String fStr = fScore == null ? "-" : String.format(Locale.US, "%.2f", fScore);
-            System.out.printf("%-12s | %-25s | %-7s | %-7s | %-7s | %-12s\n",
+            String fStr = fScore == null ? GradeManager.CHUA_DU_DIEM : String.format(Locale.US, "%.2f", fScore);
+            System.out.printf("%-12s | %-25s | %-10s | %-10s | %-15s | %-15s\n",
                     r.getStudent().getStudentId(), r.getStudent().getFullName(), pStr, eStr, fStr, r.getStatus());
         }
-        System.out.println("---------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------------");
     }
 
     private void viewAllGrades() {
@@ -704,21 +713,25 @@ public class MainMenu {
 =======
         System.out.printf("\nKẾT QUẢ MÔN HỌC: [%s] %s - %s (%d tín chỉ)\n",
                 course.getCourseType(), course.getCourseId(), course.getCourseName(), course.getCredits());
+        if (records.isEmpty()) {
+            System.out.println("Chưa có sinh viên nào có kết quả môn học này.");
+            return;
+        }
         System.out.println("Tổng số sinh viên có kết quả: " + records.size());
-        System.out.println("------------------------------------------------------------------------------------------");
-        System.out.printf("%-10s | %-24s | %-10s | %-10s | %-10s | %-15s\n",
+        System.out.println("-------------------------------------------------------------------------------------------------");
+        System.out.printf("%-10s | %-24s | %-10s | %-10s | %-15s | %-15s\n",
                 "MSSV", "Họ và tên", "Quá trình", "Cuối kỳ", "Tổng kết", "Trạng thái");
-        System.out.println("------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------------");
 
         for (GradeRecord r : records) {
             Student s = r.getStudent();
             String pStr = (r.getProcessScore() != null) ? String.format(Locale.US, "%.2f", r.getProcessScore()) : "--";
             String eStr = (r.getExamScore() != null) ? String.format(Locale.US, "%.2f", r.getExamScore()) : "--";
             Double fScore = r.getFinalScore();
-            String fStr = (fScore != null) ? String.format(Locale.US, "%.2f", fScore) : Transcript.CHUA_DU_DIEM;
+            String fStr = (fScore != null) ? String.format(Locale.US, "%.2f", fScore) : GradeManager.CHUA_DU_DIEM;
             String status = r.isComplete() ? "ĐỦ ĐIỂM" : "CHƯA ĐỦ ĐIỂM";
 
-            System.out.printf("%-10s | %-24s | %-10s | %-10s | %-10s | %-15s\n",
+            System.out.printf("%-10s | %-24s | %-10s | %-10s | %-15s | %-15s\n",
                     s.getStudentId(), s.getFullName(), pStr, eStr, fStr, status);
         }
     }
