@@ -1,143 +1,94 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package studentgrademanager.services;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import studentgrademanager.models.Course;
-import studentgrademanager.models.PracticeCourse;
 import studentgrademanager.models.TheoryCourse;
+import studentgrademanager.models.PracticeCourse;
 
-public class CourseManager implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class CourseManager {
 
-    public interface CourseUsageChecker {
-        boolean hasGrades(String courseId);
-    }
+    private final Map<String, Course> courses =
+            new LinkedHashMap<String, Course>();
 
-    private List<Course> courses;
-    private transient CourseUsageChecker usageChecker;
 
-    public CourseManager() {
-        this.courses = new ArrayList<Course>();
-        this.usageChecker = null;
-    }
-
-    public synchronized void addCourse(Course course) {
+    public void addCourse(Course course) {
         if (course == null) {
-            throw new IllegalArgumentException("Đối tượng môn học không được null.");
+            throw new IllegalArgumentException(
+                    "Mon hoc khong duoc null.");
         }
 
-        if (this.findCourse(course.getCourseId()) != null) {
-            throw new IllegalArgumentException("Mã môn học '" + course.getCourseId() + "' đã tồn tại trong hệ thống. Không thể thêm trùng.");
+        String code = course.getCode()
+                .trim().toUpperCase(Locale.ROOT);
+
+        if (courses.containsKey(code)) {
+            throw new IllegalArgumentException(
+                    "Ma mon hoc da ton tai: " + code);
         }
 
-        this.courses.add(course);
+        courses.put(code, course);
     }
 
-    public Course findCourse(String id) {
-        if (id == null) {
+
+    public void addTheoryCourse(
+            String code, String name, int credits) {
+
+        Course course = new TheoryCourse(code, name, credits);
+        addCourse(course);
+    }
+
+    public void addPracticeCourse(
+            String code, String name, int credits) {
+
+        Course course = new PracticeCourse(code, name, credits);
+        addCourse(course);
+    }
+
+    public Course findCourse(String code) {
+        if (code == null || code.trim().isEmpty()) {
             return null;
         }
-        String cleanId = id.trim();
-        for (Course c : this.courses) {
-            if (c.getCourseId().equalsIgnoreCase(cleanId)) {
-                return c;
-            }
-        }
-        return null;
+
+        return courses.get(
+                code.trim().toUpperCase(Locale.ROOT));
     }
+
 
     public List<Course> getAllCourses() {
-        return Collections.unmodifiableList(new ArrayList<Course>(this.courses));
+        return Collections.unmodifiableList(
+                new ArrayList<Course>(courses.values()));
     }
 
-    public Course findCourseById(String id) {
-        return this.findCourse(id);
-    }
+  
+    public boolean existsCourse(String code) {
+        if (code == null) {
+            return false;
+        }
 
-    public boolean exists(String id) {
-        return this.findCourse(id) != null;
+        return courses.containsKey(
+                code.trim().toUpperCase(Locale.ROOT));
     }
 
     public int getCourseCount() {
-        return this.courses.size();
+        return courses.size();
     }
+    
+public void loadCourses(List<Course> data) {
+    courses.clear();
 
-    public synchronized void clear() {
-        this.courses.clear();
+    for (Course course : data) {
+        addCourse(course);
     }
+}
 
-    public void setUsageChecker(CourseUsageChecker checker) {
-        this.usageChecker = checker;
-    }
-
-    public boolean canModifyCourse(String courseId) {
-        if (this.usageChecker == null) {
-            return true;
-        }
-        return !this.usageChecker.hasGrades(courseId);
-    }
-
-    public synchronized void updateCourseCredits(String courseId, int newCredits) {
-        Course course = this.findCourse(courseId);
-        if (course == null) {
-            throw new IllegalArgumentException("Không tìm thấy môn học có mã '" + courseId + "'.");
-        }
-
-        if (!this.canModifyCourse(courseId)) {
-            throw new IllegalStateException("Không được phép thay đổi số tín chỉ vì môn '" 
-                    + courseId + "' đã có sinh viên ghi nhận kết quả điểm!");
-        }
-
-        course.setCredits(newCredits);
-    }
-
-    public synchronized void updateCourseName(String courseId, String newName) {
-        Course course = this.findCourse(courseId);
-        if (course == null) {
-            throw new IllegalArgumentException("Không tìm thấy môn học có mã '" + courseId + "'.");
-        }
-        course.setCourseName(newName);
-    }
-
-    public static int parseAndValidateCredits(String creditsInput) {
-        if (creditsInput == null || creditsInput.trim().isEmpty()) {
-            throw new IllegalArgumentException("Số tín chỉ không được để trống.");
-        }
-
-        String trimmed = creditsInput.trim();
-        if (trimmed.contains(".") || trimmed.contains(",")) {
-            throw new IllegalArgumentException("Số tín chỉ phải là số nguyên (từ chối số thập phân: " + trimmed + ").");
-        }
-
-        int credits;
-        try {
-            credits = Integer.parseInt(trimmed);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Số tín chỉ phải là số nguyên hợp lệ: " + trimmed);
-        }
-
-        if (!Course.isValidCredits(credits)) {
-            throw new IllegalArgumentException("Số tín chỉ phải nằm trong khoảng từ " 
-                    + Course.MIN_CREDITS + " đến " + Course.MAX_CREDITS + " (giá trị nhập: " + credits + ").");
-        }
-
-        return credits;
-    }
-
-    public static Course createCourse(String type, String courseId, String courseName, int credits) {
-        if (type == null) {
-            throw new IllegalArgumentException("Loại môn học không được để trống.");
-        }
-        String cleanType = type.trim().toUpperCase();
-
-        if ("THEORY".equals(cleanType) || "LÝ THUYẾT".equalsIgnoreCase(cleanType) || "LY THUET".equalsIgnoreCase(cleanType) || "LT".equalsIgnoreCase(cleanType)) {
-            return new TheoryCourse(courseId, courseName, credits);
-        } else if ("PRACTICE".equals(cleanType) || "THỰC HÀNH".equalsIgnoreCase(cleanType) || "THUC HANH".equalsIgnoreCase(cleanType) || "TH".equalsIgnoreCase(cleanType)) {
-            return new PracticeCourse(courseId, courseName, credits);
-        } else {
-            throw new IllegalArgumentException("Loại môn học không hợp lệ: '" + type + "'. Chỉ chấp nhận 'THEORY' hoặc 'PRACTICE'.");
-        }
-    }
 }
