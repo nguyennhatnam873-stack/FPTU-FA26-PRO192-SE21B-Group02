@@ -1,160 +1,65 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package studentgrademanager.services;
 
-<<<<<<< HEAD
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-=======
-import java.util.ArrayList;
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
+import java.util.LinkedHashMap;
 import java.util.List;
-import studentgrademanager.models.GradeRecord;
+import java.util.Locale;
+import java.util.Map;
+
 import studentgrademanager.models.Student;
 
-<<<<<<< HEAD
-public class StudentManager implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class StudentManager {
 
-    private List<Student> students;
+    private final Map<String, Student> students =
+            new LinkedHashMap<String, Student>();
 
-    public StudentManager() {
-        this.students = new ArrayList<Student>();
-    }
-
-    public synchronized boolean addStudent(Student student) {
+    public void addStudent(Student student) {
         if (student == null) {
-            throw new IllegalArgumentException("Đối tượng sinh viên không được null.");
+            throw new IllegalArgumentException(
+                    "Sinh vien khong duoc null.");
         }
-        if (this.findStudent(student.getStudentId()) != null) {
-            throw new IllegalArgumentException("Mã số sinh viên '" + student.getStudentId() + "' đã tồn tại.");
-        }
-        return this.students.add(student);
-    }
 
-    public synchronized boolean addStudent(String studentId, String fullName) {
-        Student s = new Student(studentId, fullName);
-        return this.addStudent(s);
+        String id = student.getStudentId()
+                .trim().toUpperCase(Locale.ROOT);
+
+        if (students.containsKey(id)) {
+            throw new IllegalArgumentException(
+                    "Ma sinh vien da ton tai: " + id);
+        }
+
+        students.put(id, student);
     }
 
     public Student findStudent(String studentId) {
-        if (studentId == null) {
+        if (studentId == null || studentId.trim().isEmpty()) {
             return null;
         }
-=======
-/**
- * Phụ trách: Người 3 — Sinh viên & cặp SV–môn
- */
-public class StudentManager {
-    private List<Student> students;
 
-    public StudentManager() {
-        this.students = new ArrayList<>();
+        return students.get(
+                studentId.trim().toUpperCase(Locale.ROOT));
     }
 
-    // 1. Thêm sinh viên từ chuỗi (Kiểm tra rỗng, trim, trùng mã)
-    public boolean addStudent(String studentId, String fullName) {
-        if (studentId == null || fullName == null) {
-            return false;
-        }
-        String cleanId = studentId.trim();
-        String cleanName = fullName.trim();
-
-        if (cleanId.isEmpty() || cleanName.isEmpty()) {
-            System.out.println("Lỗi: MSSV và Họ tên không được để trống!");
-            return false;
-        }
-
-        if (this.findStudent(cleanId) != null) {
-            System.out.println("Lỗi: MSSV '" + cleanId + "' đã tồn tại!");
-            return false;
-        }
-
-        this.students.add(new Student(cleanId, cleanName));
-        return true;
-    }
-
-    // 2. Thêm sinh viên từ đối tượng Student (phục vụ FileDataStore đọc từ file)
-    public boolean addStudent(Student s) {
-        if (s == null) {
-            return false;
-        }
-        return this.addStudent(s.getStudentId(), s.getFullName());
-    }
-
-    // 3. Tìm sinh viên theo mã (không phân biệt hoa thường)
-    public Student findStudent(String studentId) {
-        if (studentId == null) return null;
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
-        String cleanId = studentId.trim();
-        for (Student s : this.students) {
-            if (s.getStudentId().equalsIgnoreCase(cleanId)) {
-                return s;
-            }
-        }
-        return null;
-    }
-
-<<<<<<< HEAD
     public List<Student> getAllStudents() {
-        return Collections.unmodifiableList(new ArrayList<Student>(this.students));
+        return Collections.unmodifiableList(
+                new ArrayList<Student>(students.values()));
     }
 
     public int getStudentCount() {
-        return this.students.size();
+        return students.size();
     }
+    
+public void loadStudents(List<Student> data) {
+    students.clear();
 
-    public boolean exists(String studentId) {
-        return this.findStudent(studentId) != null;
+    for (Student student : data) {
+        addStudent(student);
     }
+}
 
-    public synchronized boolean deleteStudent(String studentId, List<GradeRecord> allRecords) {
-        Student s = this.findStudent(studentId);
-        if (s == null) {
-=======
-    // 4. Lấy danh sách toàn bộ sinh viên
-    public List<Student> getAllStudents() {
-        return this.students;
-    }
-
-    // 5. Xóa danh sách sinh viên để nạp mới từ file
-    public void clear() {
-        this.students.clear();
-    }
-
-    // 6. Kiểm tra điều kiện xóa (Không cho xóa SV đã có kết quả)
-    public boolean deleteStudent(String studentId, List<GradeRecord> allRecords) {
-        Student s = this.findStudent(studentId);
-        if (s == null) {
-            System.out.println("Lỗi: Không tìm thấy sinh viên để xóa!");
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
-            return false;
-        }
-
-        if (allRecords != null) {
-            for (GradeRecord record : allRecords) {
-<<<<<<< HEAD
-                if (record.getStudent() != null && 
-                    record.getStudent().getStudentId().equalsIgnoreCase(s.getStudentId())) {
-                    throw new IllegalStateException("Không được xóa sinh viên '" + s.getStudentId() + "' vì đã có kết quả học tập!");
-=======
-                if (record.getStudent().getStudentId().equalsIgnoreCase(s.getStudentId())) {
-                    System.out.println("Lỗi: Không được xóa sinh viên đã có kết quả học tập!");
-                    return false;
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
-                }
-            }
-        }
-
-<<<<<<< HEAD
-        return this.students.remove(s);
-    }
-
-    public synchronized void clear() {
-        this.students.clear();
-=======
-        this.students.remove(s);
-        System.out.println("Xóa sinh viên thành công!");
-        return true;
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
-    }
 }

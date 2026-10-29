@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package studentgrademanager.services;
 
 import java.io.Serializable;
@@ -26,9 +31,11 @@ public class GradeManager implements Serializable {
 
     private final List<GradeRecord> records;
 
-    public GradeManager() {
-        this.records = new ArrayList<GradeRecord>();
-    }
+    public GradeRecord addOrUpdateGrade(
+            Student student,
+            Course course,
+            Double processScore,
+            Double examScore) {
 
     // ==================== VALIDATION MIỀN ĐIỂM ====================
 
@@ -54,7 +61,6 @@ public class GradeManager implements Serializable {
                     "Điểm số phải nằm trong khoảng [%.1f, %.1f] (giá trị nhập: %s).",
                     MIN_SCORE, MAX_SCORE, score));
         }
-    }
 
     /**
      * Parse điểm từ chuỗi nhập vào.
@@ -254,8 +260,14 @@ public class GradeManager implements Serializable {
     public int getRecordCount() {
         return this.records.size();
     }
+    
+public void loadGrades(List<GradeRecord> data) {
+    records.clear();
 
-    public synchronized void clear() {
-        this.records.clear();
+    for (GradeRecord record : data) {
+        if (record != null) {
+            records.add(record);
+        }
     }
+}
 }
