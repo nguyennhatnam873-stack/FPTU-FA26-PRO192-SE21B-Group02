@@ -18,6 +18,11 @@ public class GradeManager implements Serializable {
     public static final double MIN_SCORE = 0.0;
     public static final double MAX_SCORE = 10.0;
 
+    public static final String STATUS_COMPLETE = "DU_DIEM";
+    public static final String STATUS_INCOMPLETE = "CHUA_DU_DIEM";
+    public static final String DU_DIEM = STATUS_COMPLETE;
+    public static final String CHUA_DU_DIEM = STATUS_INCOMPLETE;
+
     private final List<GradeRecord> records;
 
     public GradeManager() {
@@ -45,10 +50,11 @@ public class GradeManager implements Serializable {
     }
 
     public static Double parseScore(String input) {
-        if (input == null || input.trim().isEmpty() || "-".equals(input.trim()) || "EMPTY".equalsIgnoreCase(input.trim())) {
+        if (input == null || input.trim().isEmpty() || "-".equals(input.trim()) 
+                || "EMPTY".equalsIgnoreCase(input.trim()) || "null".equalsIgnoreCase(input.trim())) {
             return null;
         }
-        double val = Double.parseDouble(input.trim());
+        double val = Double.parseDouble(input.trim().replace(',', '.'));
         validateScore(val);
         return val;
     }

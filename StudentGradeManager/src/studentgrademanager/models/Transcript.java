@@ -11,6 +11,7 @@ public class Transcript implements Serializable {
 
     public static final String NO_GPA_MESSAGE = "CHUA_CO_DIEM_TRUNG_BINH";
     public static final String CHUA_CO_DIEM_TB = NO_GPA_MESSAGE;
+    public static final String CHUA_CO_DIEM_TRUNG_BINH = NO_GPA_MESSAGE;
     public static final String CHUA_DU_DIEM = "CHUA_DU_DIEM";
 
     private Student student;

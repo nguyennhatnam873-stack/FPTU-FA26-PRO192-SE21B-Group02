@@ -30,8 +30,9 @@ Final-Project/
 │   ├── ai_logs/
 │   │   └── AI_INTERACTION_LOG.md       # Nhật ký minh bạch sử dụng AI
 │   ├── BAO_CAO_NGUOI_1.md              # Báo cáo chi tiết của Người 1 (Trưởng nhóm / Bảng điểm)
-│   ├── BAO_CAO_NGUOI_2.md              # Báo cáo chi tiết của Người 2
-│   ├── BAO_CAO_NGUOI_5.md              # Báo cáo chi tiết của Người 5
+│   ├── BAO_CAO_NGUOI_2.md              # Báo cáo chi tiết của Người 2 (Môn học & Đánh giá)
+│   ├── BAO_CAO_NGUOI_4.md              # Báo cáo chi tiết của Người 4 (Nhập & Cập nhật điểm)
+│   ├── BAO_CAO_NGUOI_5.md              # Báo cáo chi tiết của Người 5 (Lưu/đọc file & CSV)
 │   └── checklist.html                  # Checklist 14 ngày & 11 task/thành viên
 ├── data/
 │   └── data_store.txt                  # File lưu trữ dữ liệu bền vững (Người 5)
@@ -43,9 +44,11 @@ Final-Project/
 │   │   ├── storage/                    # Lưu/đọc file & xuất CSV (FileDataStore, CsvExporter)
 │   │   ├── ui/                         # Giao diện Console (MainMenu)
 │   │   └── StudentGradeManager.java    # Lớp chứa hàm main()
-│   ├── test/studentgrademanager/       # Bộ kiểm thử tự động
+│   ├── test/studentgrademanager/       # Bộ kiểm thử tự động (100% PASS - 174/174 assertions)
 │   │   ├── Person1Test.java            # Test Người 1 (D02, D04, D06, D07, D03)
 │   │   ├── Person2Test.java            # Test Người 2 (D01, D07, D11)
+│   │   ├── Person3Test.java            # Test Người 3 (D05, D06)
+│   │   ├── Person4Test.java            # Test Người 4 (D03, D04, D05, D10)
 │   │   └── Person5Test.java            # Test Người 5 (D08, D09, D10)
 │   ├── dist/
 │   │   └── StudentGradeManager.jar     # File thực thi JAR chuẩn JDK 8
@@ -73,7 +76,7 @@ Final-Project/
   ```powershell
   powershell -ExecutionPolicy Bypass -File .\build_project.ps1
   ```
-- **Chạy toàn bộ các ca kiểm thử tự động (Person 1, Person 2 & Person 5):**
+- **Chạy toàn bộ các ca kiểm thử tự động (Person 1 -> Person 5):**
   ```powershell
   powershell -ExecutionPolicy Bypass -File .\run_tests.ps1
   ```

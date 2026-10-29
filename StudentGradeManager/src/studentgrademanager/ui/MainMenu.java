@@ -52,6 +52,10 @@ public class MainMenu {
         this(studentManager, courseManager, gradeManager, dataStore);
     }
 
+    public MainMenu(StudentManager studentManager, CourseManager courseManager, GradeManager gradeManager) {
+        this(studentManager, courseManager, gradeManager, new FileDataStore());
+    }
+
     /**
      * Vòng lặp giao diện chính của console.
      */
