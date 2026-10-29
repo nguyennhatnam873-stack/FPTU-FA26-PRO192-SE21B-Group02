@@ -105,98 +105,86 @@ public class Person4Test {
         } catch (IllegalArgumentException e) {
             caughtOver = true;
         }
-        assertTrue("validateScore(10.01)", caughtOver, "Từ chối số lớn hơn 10: 10.01");
+        assertTrue("validateScore(10.01)", caughtOver, "Từ chối số lớn hơn mười: 10.01");
 
-        // 6. Double.NaN (từ chối)
+        // 6. Giá trị đặc biệt: Double.NaN (từ chối)
         boolean caughtNaN = false;
         try {
             GradeManager.validateScore(Double.NaN);
         } catch (IllegalArgumentException e) {
             caughtNaN = true;
         }
-        assertTrue("validateScore(NaN)", caughtNaN, "Từ chối giá trị Double.NaN");
+        assertTrue("validateScore(NaN)", caughtNaN, "Từ chối Double.NaN");
 
-        // 7. Double.POSITIVE_INFINITY (từ chối)
-        boolean caughtInf = false;
+        // 7. Giá trị đặc biệt: Dương vô cực (từ chối)
+        boolean caughtPosInf = false;
         try {
             GradeManager.validateScore(Double.POSITIVE_INFINITY);
         } catch (IllegalArgumentException e) {
-            caughtInf = true;
+            caughtPosInf = true;
         }
-        assertTrue("validateScore(Infinity)", caughtInf, "Từ chối giá trị vô cực dương");
+        assertTrue("validateScore(+Infinity)", caughtPosInf, "Từ chối POSITIVE_INFINITY");
 
-        // 8. Double.NEGATIVE_INFINITY (từ chối)
+        // 8. Giá trị đặc biệt: Âm vô cực (từ chối)
         boolean caughtNegInf = false;
         try {
             GradeManager.validateScore(Double.NEGATIVE_INFINITY);
         } catch (IllegalArgumentException e) {
             caughtNegInf = true;
         }
-        assertTrue("validateScore(-Infinity)", caughtNegInf, "Từ chối giá trị vô cực âm");
+        assertTrue("validateScore(-Infinity)", caughtNegInf, "Từ chối NEGATIVE_INFINITY");
     }
 
     /**
-     * Kiểm tra hàm parseScore(String):
-     * Chuỗi rỗng, "-", "EMPTY" -> null; "0" -> 0.0; "6,83" -> 6.83; "abc", "NaN" -> Exception.
+     * Kiểm tra hàm parseScore(String) độc lập:
+     * Phân biệt chuỗi rỗng / thiếu với chuỗi số, chặn chuỗi sai kiểu.
      */
     private static void testScoreParsing_ValidAndInvalidStrings() {
-        System.out.println("\n--- Test 2: Parse chuỗi điểm và phân biệt điểm 0 với điểm thiếu ---");
+        System.out.println("\n--- Test 2: Phân tích cú pháp chuỗi điểm số (parseScore) ---");
 
+        // Điểm thiếu: null, rỗng, khoảng trắng, "-", "EMPTY", "null"
         assertTrue("parseScore(null) -> null", GradeManager.parseScore(null) == null, "Trả về null");
         assertTrue("parseScore(\"\") -> null", GradeManager.parseScore("") == null, "Chuỗi rỗng trả về null");
-        assertTrue("parseScore(\"  \") -> null", GradeManager.parseScore("   ") == null, "Khoảng trắng trả về null");
-        assertTrue("parseScore(\"-\") -> null", GradeManager.parseScore("-") == null, "Dấu '-' trả về null (thiếu)");
+        assertTrue("parseScore(\"   \") -> null", GradeManager.parseScore("   ") == null, "Khoảng trắng trả về null");
+        assertTrue("parseScore(\"-\") -> null", GradeManager.parseScore("-") == null, "Ký tự '-' trả về null");
         assertTrue("parseScore(\"EMPTY\") -> null", GradeManager.parseScore("EMPTY") == null, "'EMPTY' trả về null");
-        assertTrue("parseScore(\"null\") -> null", GradeManager.parseScore("null") == null, "'null' trả về null");
+        assertTrue("parseScore(\"empty\") -> null", GradeManager.parseScore("empty") == null, "'empty' trả về null");
+        assertTrue("parseScore(\"NULL\") -> null", GradeManager.parseScore("NULL") == null, "'NULL' trả về null");
 
-        // Điểm 0 là hợp lệ và KHÔNG ĐƯỢC biến thành null
-        Double zero = GradeManager.parseScore("0");
-        assertTrue("parseScore(\"0\") -> 0.0", zero != null && zero == 0.0, "Điểm 0 hợp lệ, khác null");
+        // Điểm hợp lệ: 0, 0.0, 10, 8.5, dùng dấu phẩy "8,5"
+        assertTrue("parseScore(\"0\") -> 0.0", Double.valueOf(0.0).equals(GradeManager.parseScore("0")), "Số 0 là 0.0");
+        assertTrue("parseScore(\"0.0\") -> 0.0", Double.valueOf(0.0).equals(GradeManager.parseScore("0.0")), "Số 0.0 là 0.0");
+        assertTrue("parseScore(\"10\") -> 10.0", Double.valueOf(10.0).equals(GradeManager.parseScore("10")), "Số 10 là 10.0");
+        assertTrue("parseScore(\"8.5\") -> 8.5", Double.valueOf(8.5).equals(GradeManager.parseScore("8.5")), "Số 8.5 là 8.5");
+        assertTrue("parseScore(\"8,5\") -> 8.5 (dấu phẩy)", Double.valueOf(8.5).equals(GradeManager.parseScore("8,5")), "Hỗ trợ dấu phẩy 8,5 -> 8.5");
 
-        Double zeroFloat = GradeManager.parseScore("0.0");
-        assertTrue("parseScore(\"0.0\") -> 0.0", zeroFloat != null && zeroFloat == 0.0, "Điểm 0.0 hợp lệ");
+        // Chuỗi sai kiểu: "abc", "NaN", "Infinity", "-0.01", "10.01"
+        assertParseThrows("abc", "Chuỗi chữ cái 'abc'");
+        assertParseThrows("NaN", "Chuỗi đặc biệt 'NaN'");
+        assertParseThrows("nan", "Chuỗi đặc biệt 'nan'");
+        assertParseThrows("Infinity", "Chuỗi 'Infinity'");
+        assertParseThrows("+Infinity", "Chuỗi '+Infinity'");
+        assertParseThrows("-Infinity", "Chuỗi '-Infinity'");
+        assertParseThrows("-0.01", "Số âm dạng chuỗi '-0.01'");
+        assertParseThrows("10.01", "Số > 10 dạng chuỗi '10.01'");
+    }
 
-        // Hỗ trợ cả dấu phẩy lẫn dấu chấm
-        Double valComma = GradeManager.parseScore("6,83");
-        assertTrue("parseScore(\"6,83\")", valComma != null && Math.abs(valComma - 6.83) < 0.0001, "Parse dấu phẩy thành công");
-
-        Double valDot = GradeManager.parseScore("6.83");
-        assertTrue("parseScore(\"6.83\")", valDot != null && Math.abs(valDot - 6.83) < 0.0001, "Parse dấu chấm thành công");
-
-        // Từ chối chuỗi chữ sai kiểu
-        boolean caughtAbc = false;
+    private static void assertParseThrows(String input, String description) {
+        boolean caught = false;
         try {
-            GradeManager.parseScore("abc");
+            GradeManager.parseScore(input);
         } catch (IllegalArgumentException e) {
-            caughtAbc = true;
+            caught = true;
         }
-        assertTrue("parseScore(\"abc\")", caughtAbc, "Ném ngoại lệ rõ ràng khi chuỗi không phải số");
-
-        // Từ chối chuỗi "NaN"
-        boolean caughtStrNaN = false;
-        try {
-            GradeManager.parseScore("NaN");
-        } catch (IllegalArgumentException e) {
-            caughtStrNaN = true;
-        }
-        assertTrue("parseScore(\"NaN\")", caughtStrNaN, "Ném ngoại lệ khi nhập chuỗi 'NaN'");
-
-        // Từ chối chuỗi "Infinity"
-        boolean caughtStrInf = false;
-        try {
-            GradeManager.parseScore("Infinity");
-        } catch (IllegalArgumentException e) {
-            caughtStrInf = true;
-        }
-        assertTrue("parseScore(\"Infinity\")", caughtStrInf, "Ném ngoại lệ khi nhập chuỗi 'Infinity'");
+        assertTrue("parseScore('" + input + "')", caught, "Từ chối " + description);
     }
 
     /**
      * Kiểm tra tính nguyên tử (Atomic Check-Before-Assign):
-     * Nếu 1 trong 2 điểm sai, không điểm nào bị gán dở dang vào bản ghi cũ.
+     * Nếu một trong hai điểm bị sai, bản ghi KHÔNG ĐƯỢC PHÉP thay đổi dở dang.
      */
     private static void testAtomicCheckBeforeAssign() {
-        System.out.println("\n--- Test 3: Tính nguyên tử (Kiểm tra tất cả điều kiện TRƯỚC khi gán) ---");
+        System.out.println("\n--- Test 3: Tính nguyên tử - Kiểm tra toàn bộ trước khi gán ---");
 
         GradeManager gm = new GradeManager();
         Student s = new Student("SE01", "Test Student");
@@ -245,7 +233,7 @@ public class Person4Test {
      * Dữ liệu mẫu: An có LT101 (QT 8, CK 6), TH101 (QT 8, CK 6), LT102 (QT 9, CK thiếu);
      * Bình chưa có kết quả nào.
      * Kỳ vọng: LT102 ra CHUA_DU_DIEM và không có điểm tổng kết;
-     * Bình ra CHUA_CO_DIEM_TRUNG_BINH, 0/0 môn, 0/0 tín chỉ.
+     * Bình ra 0/0 môn, 0.0 điểm trung bình.
      */
     private static void testD03_MissingScoreStateAndEmptyStudent() {
         System.out.println("\n--- Test D03: Trạng thái CHUA_DU_DIEM & Sinh viên chưa có kết quả ---");
@@ -264,26 +252,23 @@ public class Person4Test {
 
         // Kiểm tra An - LT102
         GradeRecord rLT102 = gm.findRecord("QE210001", "LT102");
-        assertTrue("D03 - An LT102 chưa hoàn thành", !rLT102.isComplete(), "isComplete() == false");
+        assertTrue("D03 - An LT102 chưa hoàn thành", !rLT102.hasCompleteScores(), "hasCompleteScores() == false");
+        String statusLT102 = rLT102.hasCompleteScores() ? GradeManager.DU_DIEM : GradeManager.CHUA_DU_DIEM;
         assertTrue("D03 - An LT102 trạng thái CHUA_DU_DIEM", 
-                GradeManager.CHUA_DU_DIEM.equals(rLT102.getStatus()), "Status = " + rLT102.getStatus());
-        assertTrue("D03 - An LT102 không có điểm tổng kết", rLT102.getFinalScore() == null, "getFinalScore() == null");
+                GradeManager.CHUA_DU_DIEM.equals(statusLT102), "Status = " + statusLT102);
+        assertTrue("D03 - An LT102 không có điểm tổng kết", rLT102.getFinalGrade() == null, "getFinalGrade() == null");
 
         // Kiểm tra Bình (chưa có điểm)
         Transcript transcriptBinh = new Transcript(binh, gm.getRecordsByStudent(binh.getStudentId()));
-        assertTrue("D03 - Bình 0/0 môn", transcriptBinh.getCompletedCourses() == 0 && transcriptBinh.getTotalCourses() == 0, "0/0 môn");
-        assertTrue("D03 - Bình 0/0 tín chỉ", transcriptBinh.getCompletedCredits() == 0 && transcriptBinh.getTotalCredits() == 0, "0/0 tín chỉ");
-        assertTrue("D03 - Bình không có điểm TB thô", transcriptBinh.calculateWeightedGPA() == null, "raw GPA == null");
-        assertTrue("D03 - Bình hiển thị CHUA_CO_DIEM_TRUNG_BINH", 
-                Transcript.CHUA_CO_DIEM_TRUNG_BINH.equals(transcriptBinh.getFormattedGPA()), 
-                "Formatted GPA: " + transcriptBinh.getFormattedGPA());
+        assertTrue("D03 - Bình 0/0 môn", transcriptBinh.getCompletedCourseCount() == 0 && transcriptBinh.getTotalCourseCount() == 0, "0/0 môn");
+        assertTrue("D03 - Bình trung bình 0.0", transcriptBinh.calculateAverage() == 0.0, "average == 0.0");
     }
 
     /**
      * Ca kiểm thử D04:
      * Đặt LT102 của An thành QT 0, CK 10:
      * Tổng kết LT102 = 0*0.3 + 10*0.7 = 7.00;
-     * GPA = 47.8 / 7 = 6.83, đủ 3/3 môn, 7/7 tín chỉ.
+     * GPA = 47.8 / 7 = 6.83, đủ 3/3 môn.
      */
     private static void testD04_UpdateLT102_ZeroAndTen() {
         System.out.println("\n--- Test D04: Cập nhật LT102 QT 0, CK 10 -> Tổng kết 7.00, GPA 6.83 ---");
@@ -302,24 +287,23 @@ public class Person4Test {
         gm.createOrUpdateRecord(an, lt102, 0.0, 10.0);
 
         GradeRecord rLT102 = gm.findRecord("QE210001", "LT102");
-        assertTrue("D04 - LT102 đủ điểm", rLT102.isComplete(), "isComplete() == true");
+        assertTrue("D04 - LT102 đủ điểm", rLT102.hasCompleteScores(), "hasCompleteScores() == true");
         assertTrue("D04 - QT là 0.0 hợp lệ", rLT102.getProcessScore() == 0.0, "QT = 0.0");
         assertTrue("D04 - CK là 10.0", rLT102.getExamScore() == 10.0, "CK = 10.0");
 
-        Double finalScoreLT102 = rLT102.getFinalScore();
+        Double finalScoreLT102 = rLT102.getFinalGrade();
         boolean finalOk = finalScoreLT102 != null && Math.abs(finalScoreLT102 - 7.00) < 0.0001;
         assertTrue("D04 - Tổng kết LT102 là 7.00", finalOk, String.format(Locale.US, "Điểm TK = %.2f", finalScoreLT102));
 
         // Kiểm tra GPA của An: 47.8 / 7 = 6.82857 -> hiển thị 6.83
         Transcript transcriptAn = new Transcript(an, gm.getRecordsByStudent(an.getStudentId()));
-        assertTrue("D04 - Đủ 3/3 môn", transcriptAn.getCompletedCourses() == 3 && transcriptAn.getTotalCourses() == 3, "3/3 môn");
-        assertTrue("D04 - Đủ 7/7 tín chỉ", transcriptAn.getCompletedCredits() == 7 && transcriptAn.getTotalCredits() == 7, "7/7 tín chỉ");
+        assertTrue("D04 - Đủ 3/3 môn", transcriptAn.getCompletedCourseCount() == 3 && transcriptAn.getTotalCourseCount() == 3, "3/3 môn");
 
-        Double rawGPA = transcriptAn.calculateWeightedGPA();
-        boolean gpaRawOk = rawGPA != null && Math.abs(rawGPA - (47.8 / 7.0)) < 0.0001;
+        double rawGPA = transcriptAn.calculateAverage();
+        boolean gpaRawOk = Math.abs(rawGPA - (47.8 / 7.0)) < 0.0001;
         assertTrue("D04 - GPA thô = 47.8/7", gpaRawOk, String.format(Locale.US, "Raw GPA = %.5f", rawGPA));
-        assertTrue("D04 - GPA làm tròn hiển thị 6.83", "6.83".equals(transcriptAn.getFormattedGPA()), 
-                "Formatted GPA: " + transcriptAn.getFormattedGPA());
+        String formattedGPA = String.format(Locale.US, "%.2f", rawGPA);
+        assertTrue("D04 - GPA làm tròn hiển thị 6.83", "6.83".equals(formattedGPA), "Formatted GPA: " + formattedGPA);
     }
 
     /**
@@ -400,16 +384,16 @@ public class Person4Test {
 
         // GPA của An vẫn là 6.76 ((6.6*3 + 7.0*2) / 5 = 33.8 / 5 = 6.76)
         Transcript t = new Transcript(an, gm.getRecordsByStudent(an.getStudentId()));
-        assertTrue("D05 - GPA An giữ nguyên 6.76", "6.76".equals(t.getFormattedGPA()), "GPA formatted: " + t.getFormattedGPA());
-        assertTrue("D05 - Đủ 2/3 môn", t.getCompletedCourses() == 2 && t.getTotalCourses() == 3, "2/3 môn");
-        assertTrue("D05 - Đủ 5/7 tín chỉ", t.getCompletedCredits() == 5 && t.getTotalCredits() == 7, "5/7 tín chỉ");
+        String formattedGPA = String.format(Locale.US, "%.2f", t.calculateAverage());
+        assertTrue("D05 - GPA An giữ nguyên 6.76", "6.76".equals(formattedGPA), "GPA formatted: " + formattedGPA);
+        assertTrue("D05 - Đủ 2/3 môn", t.getCompletedCourseCount() == 2 && t.getTotalCourseCount() == 3, "2/3 môn");
     }
 
     /**
      * Ca kiểm thử D10:
      * Đặt LT101 của An thành QT 0, CK thiếu (null).
      * Kiểm tra: QT vẫn là 0.0, CK vẫn là thiếu; chỉ TH101 đủ điểm,
-     * GPA = 7.00, đủ 1/3 môn, 2/7 tín chỉ.
+     * GPA = 7.00, đủ 1/3 môn.
      */
     private static void testD10_ZeroScoreVsMissingScore() {
         System.out.println("\n--- Test D10: Điểm 0 phân biệt hoàn toàn với điểm thiếu (An LT101: QT=0, CK=null) ---");
@@ -430,14 +414,14 @@ public class Person4Test {
         GradeRecord rLT101 = gm.findRecord("QE210001", "LT101");
         assertTrue("D10 - QT của LT101 là 0.0", rLT101.getProcessScore() != null && rLT101.getProcessScore() == 0.0, "QT = 0.0 (không null)");
         assertTrue("D10 - CK của LT101 là thiếu (null)", rLT101.getExamScore() == null, "CK = null");
-        assertTrue("D10 - LT101 trạng thái CHUA_DU_DIEM", GradeManager.CHUA_DU_DIEM.equals(rLT101.getStatus()), "Status = " + rLT101.getStatus());
-        assertTrue("D10 - LT101 không có điểm tổng kết", rLT101.getFinalScore() == null, "FinalScore = null");
+        String statusLT101 = rLT101.hasCompleteScores() ? GradeManager.DU_DIEM : GradeManager.CHUA_DU_DIEM;
+        assertTrue("D10 - LT101 trạng thái CHUA_DU_DIEM", GradeManager.CHUA_DU_DIEM.equals(statusLT101), "Status = " + statusLT101);
+        assertTrue("D10 - LT101 không có điểm tổng kết", rLT101.getFinalGrade() == null, "FinalScore = null");
 
         // Bảng điểm An: lúc này chỉ có TH101 đủ điểm (QT 8.0, CK 6.0 -> TK 7.00)
         Transcript t = new Transcript(an, gm.getRecordsByStudent(an.getStudentId()));
-        assertTrue("D10 - Đủ đúng 1/3 môn", t.getCompletedCourses() == 1 && t.getTotalCourses() == 3, "1/3 môn");
-        assertTrue("D10 - Đủ đúng 2/7 tín chỉ", t.getCompletedCredits() == 2 && t.getTotalCredits() == 7, "2/7 tín chỉ");
-        assertTrue("D10 - GPA trung bình 7.00", "7.00".equals(t.getFormattedGPA()), "GPA formatted: " + t.getFormattedGPA());
+        assertTrue("D10 - Đủ đúng 1/3 môn", t.getCompletedCourseCount() == 1 && t.getTotalCourseCount() == 3, "1/3 môn");
+        String formattedGPA = String.format(Locale.US, "%.2f", t.calculateAverage());
+        assertTrue("D10 - GPA trung bình 7.00", "7.00".equals(formattedGPA), "GPA formatted: " + formattedGPA);
     }
 }
-

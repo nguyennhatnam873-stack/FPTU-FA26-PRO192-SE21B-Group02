@@ -4,7 +4,9 @@
  */
 package studentgrademanager.ui;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 import studentgrademanager.models.Course;
@@ -14,12 +16,8 @@ import studentgrademanager.services.CourseManager;
 import studentgrademanager.services.StudentManager;
 import studentgrademanager.services.GradeManager;
 import studentgrademanager.services.TranscriptService;
-import studentgrademanager.storage.CsvExporter;
-
-import java.io.File;
-import java.io.IOException;
-
 import studentgrademanager.storage.AppData;
+import studentgrademanager.storage.CsvExporter;
 import studentgrademanager.storage.FileDataStore;
 
 public class MainMenu {
@@ -40,12 +38,11 @@ public class MainMenu {
         this.studentManager = studentManager;
         this.courseManager = courseManager;
         this.gradeManager = gradeManager;
-        this.transcriptService
-                = new TranscriptService(gradeManager);
+        this.transcriptService = new TranscriptService(gradeManager);
     }
 
     public void start() {
-        loadData();
+        this.loadData();
         boolean running = true;
 
         while (running) {
@@ -55,39 +52,43 @@ public class MainMenu {
             System.out.println("3. Them mon hoc");
             System.out.println("4. Xem danh sach mon hoc");
             System.out.println("5. Nhap / cap nhat diem");
-            System.out.println("6. Xem bang diem sinh vien");
-            System.out.println("7. Xuat diem ra CSV");
+            System.out.println("6. Xem ket qua theo mon hoc");
+            System.out.println("7. Xem bang diem sinh vien");
+            System.out.println("8. Xuat diem ra CSV");
             System.out.println("0. Thoat");
             System.out.print("Chon: ");
 
-            String choice = scanner.nextLine().trim();
+            String choice = this.scanner.nextLine().trim();
 
             try {
                 switch (choice) {
                     case "1":
-                        addStudent();
+                        this.addStudent();
                         break;
                     case "2":
-                        showStudents();
+                        this.showStudents();
                         break;
                     case "3":
-                        addCourse();
+                        this.addCourse();
                         break;
                     case "4":
-                        showCourses();
+                        this.showCourses();
                         break;
                     case "5":
-                        enterGrade();
+                        this.enterGrade();
                         break;
                     case "6":
-                        showTranscript();
+                        this.viewGradesByCourse();
                         break;
                     case "7":
-                        exportCsv();
+                        this.showTranscript();
+                        break;
+                    case "8":
+                        this.exportCsv();
                         break;
 
                     case "0":
-                        saveData();
+                        this.saveData();
                         running = false;
                         System.out.println("Da thoat chuong trinh.");
                         break;
@@ -98,25 +99,24 @@ public class MainMenu {
             } catch (IllegalArgumentException e) {
                 System.out.println("Loi: " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("Khong the thuc hien: "
-                        + e.getMessage());
+                System.out.println("Khong the thuc hien: " + e.getMessage());
             }
         }
     }
 
     private void addStudent() {
         System.out.print("Ma sinh vien: ");
-        String id = scanner.nextLine();
+        String id = this.scanner.nextLine();
 
         System.out.print("Ho ten: ");
-        String name = scanner.nextLine();
+        String name = this.scanner.nextLine();
 
-        studentManager.addStudent(new Student(id, name));
+        this.studentManager.addStudent(new Student(id, name));
         System.out.println("Them sinh vien thanh cong.");
     }
 
     private void showStudents() {
-        List<Student> students = studentManager.getAllStudents();
+        List<Student> students = this.studentManager.getAllStudents();
 
         if (students.isEmpty()) {
             System.out.println("Chua co sinh vien.");
@@ -130,22 +130,22 @@ public class MainMenu {
 
     private void addCourse() {
         System.out.print("Ma mon hoc: ");
-        String code = scanner.nextLine();
+        String code = this.scanner.nextLine();
 
         System.out.print("Ten mon hoc: ");
-        String name = scanner.nextLine();
+        String name = this.scanner.nextLine();
 
-        int credits = readInt("So tin chi: ");
+        int credits = this.readInt("So tin chi: ");
 
         System.out.println("1. Ly thuyet");
         System.out.println("2. Thuc hanh");
         System.out.print("Loai mon: ");
-        String type = scanner.nextLine().trim();
+        String type = this.scanner.nextLine().trim();
 
         if ("1".equals(type)) {
-            courseManager.addTheoryCourse(code, name, credits);
+            this.courseManager.addTheoryCourse(code, name, credits);
         } else if ("2".equals(type)) {
-            courseManager.addPracticeCourse(code, name, credits);
+            this.courseManager.addPracticeCourse(code, name, credits);
         } else {
             System.out.println("Loai mon khong hop le.");
             return;
@@ -155,181 +155,133 @@ public class MainMenu {
     }
 
     private void showCourses() {
-        List<Course> courses = courseManager.getAllCourses();
+        List<Course> courses = this.courseManager.getAllCourses();
 
         if (courses.isEmpty()) {
             System.out.println("Chua co mon hoc.");
             return;
         }
 
-        GradeRecord current = this.gradeManager.findRecord(student.getStudentId(), course.getCourseId());
-        if (current != null) {
-            System.out.printf(Locale.US, "Bản ghi điểm đã có: QT=%s, CK=%s, TK=%s\n",
-                    current.getProcessScore() == null ? "CHƯA CÓ" : String.format(Locale.US, "%.2f", current.getProcessScore()),
-                    current.getExamScore() == null ? "CHƯA CÓ" : String.format(Locale.US, "%.2f", current.getExamScore()),
-                    current.getFinalScore() == null ? GradeManager.CHUA_DU_DIEM : String.format(Locale.US, "%.2f", current.getFinalScore()));
-            System.out.println("(*) Hướng dẫn: Nhập điểm mới [0-10], gõ 'K' để giữ điểm cũ, để trống hoặc nhập '-'/'EMPTY' để đặt lại thành thiếu.");
-        } else {
-            System.out.println("(*) Nhập điểm (0.0 đến 10.0), để trống / gõ 'EMPTY' nếu chưa có điểm:");
-        }
-
-        String pPrompt = (current != null && current.getProcessScore() != null)
-                ? String.format(Locale.US, "Nhập điểm quá trình [Hiện tại: %.2f | 'K' giữ nguyên | 'EMPTY'/'-' để trống]: ", current.getProcessScore())
-                : "Nhập điểm quá trình (0.0 - 10.0, để trống nếu chưa có): ";
-        String ePrompt = (current != null && current.getExamScore() != null)
-                ? String.format(Locale.US, "Nhập điểm cuối kỳ [Hiện tại: %.2f | 'K' giữ nguyên | 'EMPTY'/'-' để trống]: ", current.getExamScore())
-                : "Nhập điểm cuối kỳ (0.0 - 10.0, để trống nếu chưa có): ";
-
-        String pStr = prompt(pPrompt).trim();
-        String eStr = prompt(ePrompt).trim();
-
-        try {
-            Double pScore = (current != null && "K".equalsIgnoreCase(pStr)) ? current.getProcessScore() : GradeManager.parseScore(pStr);
-            Double eScore = (current != null && "K".equalsIgnoreCase(eStr)) ? current.getExamScore() : GradeManager.parseScore(eStr);
-
-            GradeRecord saved = this.gradeManager.addOrUpdateGrade(student, course, pScore, eScore);
-            System.out.println("Ghi nhận điểm thành công: " + saved);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Lỗi: " + e.getMessage());
+        for (Course course : courses) {
+            System.out.println(
+                    course.getCode() + " | "
+                    + course.getName() + " | "
+                    + course.getCredits() + " TC | "
+                    + course.getCourseType());
         }
     }
 
     private void enterGrade() {
         System.out.print("Ma sinh vien: ");
-        String studentId = scanner.nextLine().trim();
+        String studentId = this.scanner.nextLine().trim();
 
-        Student student = studentManager.findStudent(studentId);
-
+        Student student = this.studentManager.findStudent(studentId);
         if (student == null) {
             System.out.println("Khong tim thay sinh vien.");
             return;
         }
 
-        System.out.printf("Sinh viên: %s - %s\n", student.getStudentId(), student.getFullName());
-        System.out.printf("Môn học: [%s] %s - %s (%d TC)\n", course.getCourseType(), course.getCourseId(), course.getCourseName(), course.getCredits());
+        System.out.print("Ma mon hoc: ");
+        String courseCode = this.scanner.nextLine().trim();
 
-        GradeRecord current = this.gradeManager.findRecord(student.getStudentId(), course.getCourseId());
-        if (current != null) {
-            System.out.println("(*) Cặp SV-Môn này ĐÃ CÓ KẾT QUẢ:");
-            System.out.printf("    Điểm quá trình hiện tại: %s\n", 
-                    (current.getProcessScore() != null ? current.getProcessScore() : "CHƯA CÓ"));
-            System.out.printf("    Điểm cuối kỳ hiện tại:   %s\n", 
-                    (current.getExamScore() != null ? current.getExamScore() : "CHƯA CÓ"));
-            System.out.println("(*) Nhập điểm mới, hoặc gõ 'K' để giữ điểm cũ, hoặc gõ 'EMPTY' để đặt lại thành thiếu:");
-        } else {
-            System.out.println("(*) Nhập điểm (0.0 đến 10.0), hoặc để trống / gõ 'EMPTY' nếu chưa có điểm:");
-        }
-
-        Double newProcessScore = this.promptForScore("Điểm quá trình", (current != null ? current.getProcessScore() : null));
-        Double newExamScore = this.promptForScore("Điểm cuối kỳ", (current != null ? current.getExamScore() : null));
-
-        try {
-            this.gradeManager.createOrUpdateRecord(student, course, newProcessScore, newExamScore);
-            this.isModified = true;
-            System.out.println("Cập nhật kết quả thành công (không tạo dòng trùng lặp)!");
-        } catch (Exception e) {
-            System.out.println("Lỗi khi lưu kết quả: " + e.getMessage());
-        }
-    }
-
-    private Double promptForScore(String label, Double currentVal) {
-        while (true) {
-            String prompt = (currentVal != null) 
-                    ? String.format("%s [Hiện tại: %.2f | 'K' giữ nguyên | 'EMPTY' để trống]: ", label, currentVal)
-                    : String.format("%s [Enter hoặc 'EMPTY' nếu thiếu]: ", label);
-            String input = this.readLine(prompt).trim();
-
-            if (input.equalsIgnoreCase("K") && currentVal != null) {
-                return currentVal;
-            }
-            if (input.isEmpty() || input.equalsIgnoreCase("EMPTY") || input.equalsIgnoreCase("NULL") || input.equals("-")) {
-                return null;
-            }
-
-            try {
-                return GradeManager.parseScore(input);
-            } catch (Exception e) {
-                System.out.println("  => Lỗi: " + e.getMessage() + ". Vui lòng nhập lại!");
-            }
-        }
-    }
-
-        Course course = courseManager.findCourse(courseCode);
-
+        Course course = this.courseManager.findCourse(courseCode);
         if (course == null) {
             System.out.println("Khong tim thay mon hoc.");
             return;
         }
 
-        List<GradeRecord> records = this.gradeManager.getRecordsByCourse(course.getCourseId());
-        System.out.printf("\n--- Kết quả môn học: %s - %s (%s) ---\n",
-                course.getCourseId(), course.getCourseName(), course.getCourseType());
+        GradeRecord current = this.gradeManager.findRecord(student.getStudentId(), course.getCode());
+        if (current != null) {
+            System.out.printf(Locale.US, "Ban ghi diem da co: QT=%s, CK=%s, TK=%s\n",
+                    current.getProcessScore() == null ? "CHUA CO" : String.format(Locale.US, "%.2f", current.getProcessScore()),
+                    current.getExamScore() == null ? "CHUA CO" : String.format(Locale.US, "%.2f", current.getExamScore()),
+                    current.getFinalGrade() == null ? GradeManager.CHUA_DU_DIEM : String.format(Locale.US, "%.2f", current.getFinalGrade()));
+            System.out.println("Huong dan: Nhap diem moi [0-10], go 'K' de giu diem cu, de trong hoac nhap '-' hoac 'EMPTY' de dat lai thanh thieu.");
+        } else {
+            System.out.println("Nhap diem (0.0 den 10.0), de trong hoac go 'EMPTY' neu chua co diem:");
+        }
+
+        String pPrompt = (current != null && current.getProcessScore() != null)
+                ? String.format(Locale.US, "Nhap diem qua trinh [Hien tai: %.2f | 'K' giu nguyen | 'EMPTY'/'-' de trong]: ", current.getProcessScore())
+                : "Nhap diem qua trinh (0.0 - 10.0, de trong neu chua co): ";
+        String ePrompt = (current != null && current.getExamScore() != null)
+                ? String.format(Locale.US, "Nhap diem cuoi ky [Hien tai: %.2f | 'K' giu nguyen | 'EMPTY'/'-' de trong]: ", current.getExamScore())
+                : "Nhap diem cuoi ky (0.0 - 10.0, de trong neu chua co): ";
+
+        System.out.print(pPrompt);
+        String pStr = this.scanner.nextLine().trim();
+        System.out.print(ePrompt);
+        String eStr = this.scanner.nextLine().trim();
+
+        try {
+            Double pScore = (current != null && "K".equalsIgnoreCase(pStr)) ? current.getProcessScore() : GradeManager.parseScore(pStr);
+            Double eScore = (current != null && "K".equalsIgnoreCase(eStr)) ? current.getExamScore() : GradeManager.parseScore(eStr);
+
+            GradeRecord saved = this.gradeManager.createOrUpdateRecord(student, course, pScore, eScore);
+            System.out.println("Ghi nhan diem thanh cong: " + saved);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Loi: " + e.getMessage());
+        }
+    }
+
+    private void viewGradesByCourse() {
+        System.out.print("Ma mon hoc: ");
+        String courseCode = this.scanner.nextLine().trim();
+
+        Course course = this.courseManager.findCourse(courseCode);
+        if (course == null) {
+            System.out.println("Khong tim thay mon hoc.");
+            return;
+        }
+
+        List<GradeRecord> records = this.gradeManager.getRecordsByCourse(course.getCode());
+        System.out.printf("\n--- Ket qua mon hoc: %s - %s (%s) ---\n",
+                course.getCode(), course.getName(), course.getCourseType());
         if (records.isEmpty()) {
-            System.out.println("Chưa có sinh viên nào có kết quả môn học này.");
+            System.out.println("Chua co sinh vien nao co ket qua mon hoc nay.");
             return;
         }
 
         System.out.println("-------------------------------------------------------------------------------------------------");
         System.out.printf("%-12s | %-25s | %-10s | %-10s | %-15s | %-15s\n",
-                "MSSV", "HỌ VÀ TÊN", "ĐIỂM QT", "ĐIỂM CK", "ĐIỂM TK", "TRẠNG THÁI");
+                "MSSV", "HO VA TEN", "DIEM QT", "DIEM CK", "DIEM TK", "TRANG THAI");
         System.out.println("-------------------------------------------------------------------------------------------------");
         for (GradeRecord r : records) {
             String pStr = r.getProcessScore() == null ? "-" : String.format(Locale.US, "%.2f", r.getProcessScore());
             String eStr = r.getExamScore() == null ? "-" : String.format(Locale.US, "%.2f", r.getExamScore());
-            Double fScore = r.getFinalScore();
+            Double fScore = r.getFinalGrade();
             String fStr = fScore == null ? GradeManager.CHUA_DU_DIEM : String.format(Locale.US, "%.2f", fScore);
+            String status = r.hasCompleteScores() ? GradeManager.DU_DIEM : GradeManager.CHUA_DU_DIEM;
             System.out.printf("%-12s | %-25s | %-10s | %-10s | %-15s | %-15s\n",
-                    r.getStudent().getStudentId(), r.getStudent().getFullName(), pStr, eStr, fStr, r.getStatus());
+                    r.getStudent().getStudentId(), r.getStudent().getFullName(), pStr, eStr, fStr, status);
         }
         System.out.println("-------------------------------------------------------------------------------------------------");
     }
 
-        GradeRecord record = gradeManager.addOrUpdateGrade(
-                student, course, process, exam);
-
-    private void handleTranscriptSubMenu() {
-        System.out.println("\n--- [4] BẢNG ĐIỂM & ĐIỂM TRUNG BÌNH (GPA) ---");
-        System.out.println("1. Xem bảng điểm chi tiết của sinh viên");
-        System.out.println("2. Xuất bảng điểm sinh viên ra file CSV");
-        System.out.println("3. Xuất toàn bộ kết quả điểm hệ thống ra CSV");
-        System.out.println("0. Quay lại menu chính");
-
-        String choice = prompt("Chọn thao tác: ");
-        switch (choice) {
-            case "1":
-                viewStudentTranscript();
-                break;
-            case "2":
-                exportStudentTranscriptCsv();
-                break;
-            case "3":
-                exportAllCsv();
-    }
-
     private void showTranscript() {
         System.out.print("Ma sinh vien: ");
-        String id = scanner.nextLine().trim();
+        String id = this.scanner.nextLine().trim();
 
-        transcriptService.displayTranscript(id);
+        this.transcriptService.displayTranscript(id);
     }
 
     private void exportCsv() throws Exception {
         String path = "data/grades.csv";
 
-        csvExporter.exportGrades(
-                gradeManager.getAllRecords(), path);
+        this.csvExporter.exportGrades(
+                this.gradeManager.getAllRecords(), path);
 
         System.out.println("Da xuat file: " + path);
     }
 
     private int readInt(String prompt) {
         System.out.print(prompt);
-        return Integer.parseInt(scanner.nextLine().trim());
+        return Integer.parseInt(this.scanner.nextLine().trim());
     }
 
     private Double readOptionalScore(String prompt) {
         System.out.print(prompt);
-        String value = scanner.nextLine().trim();
+        String value = this.scanner.nextLine().trim();
 
         if (value.isEmpty()) {
             return null;
@@ -341,12 +293,12 @@ public class MainMenu {
     private void saveData() {
         AppData data = new AppData();
 
-        data.getStudents().addAll(studentManager.getAllStudents());
-        data.getCourses().addAll(courseManager.getAllCourses());
-        data.getGrades().addAll(gradeManager.getAllRecords());
+        data.getStudents().addAll(this.studentManager.getAllStudents());
+        data.getCourses().addAll(this.courseManager.getAllCourses());
+        data.getGrades().addAll(this.gradeManager.getAllRecords());
 
         try {
-            dataStore.save(data, dataPath);
+            this.dataStore.save(data, this.dataPath);
             System.out.println("Da luu du lieu thanh cong.");
         } catch (IOException e) {
             System.out.println("Loi khi luu du lieu: " + e.getMessage());
@@ -354,17 +306,17 @@ public class MainMenu {
     }
 
     private void loadData() {
-        if (!dataStore.exists(dataPath)) {
+        if (!this.dataStore.exists(this.dataPath)) {
             System.out.println("Chua co du lieu cu. Bat dau du lieu moi.");
             return;
         }
 
         try {
-            AppData data = (AppData) dataStore.load(dataPath);
+            AppData data = (AppData) this.dataStore.load(this.dataPath);
 
-            studentManager.loadStudents(data.getStudents());
-            courseManager.loadCourses(data.getCourses());
-            gradeManager.loadGrades(data.getGrades());
+            this.studentManager.loadStudents(data.getStudents());
+            this.courseManager.loadCourses(data.getCourses());
+            this.gradeManager.loadGrades(data.getGrades());
 
             System.out.println("Da doc du lieu cu thanh cong.");
         } catch (IOException | ClassNotFoundException
@@ -372,5 +324,4 @@ public class MainMenu {
             System.out.println("Loi khi doc du lieu: " + e.getMessage());
         }
     }
-
 }
