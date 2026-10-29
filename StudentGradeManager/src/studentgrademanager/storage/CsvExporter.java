@@ -5,122 +5,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-<<<<<<< HEAD
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Locale;
-=======
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import studentgrademanager.models.Course;
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
 import studentgrademanager.models.GradeRecord;
 import studentgrademanager.models.Student;
 import studentgrademanager.models.Transcript;
 
-<<<<<<< HEAD
-public class CsvExporter {
-
-    public static void exportTranscriptToCsv(Transcript transcript, String targetFilePath) throws IOException {
-        if (transcript == null || targetFilePath == null) {
-            throw new IllegalArgumentException("Dữ liệu bảng điểm và đường dẫn không được null.");
-        }
-
-        File file = new File(targetFilePath);
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists()) {
-            parent.mkdirs();
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-            writer.write("\uFEFF");
-
-            Student s = transcript.getStudent();
-            writer.write(String.format("BẢNG ĐIỂM SINH VIÊN,%s - %s\n", escapeCsv(s.getStudentId()), escapeCsv(s.getFullName())));
-            writer.write("Mã môn,Tên môn học,Loại môn,Số tín chỉ,Điểm quá trình,Điểm cuối kỳ,Điểm tổng kết,Trạng thái\n");
-
-            for (GradeRecord r : transcript.getRecords()) {
-                String pStr = r.getProcessScore() == null ? "" : String.format(Locale.US, "%.2f", r.getProcessScore());
-                String eStr = r.getExamScore() == null ? "" : String.format(Locale.US, "%.2f", r.getExamScore());
-                Double finalScore = r.getFinalScore();
-                String fStr = finalScore == null ? "" : String.format(Locale.US, "%.2f", finalScore);
-
-                writer.write(String.format("%s,%s,%s,%d,%s,%s,%s,%s\n",
-                        escapeCsv(r.getCourse().getCourseId()),
-                        escapeCsv(r.getCourse().getCourseName()),
-                        escapeCsv(r.getCourse().getCourseType()),
-                        r.getCourse().getCredits(),
-                        pStr,
-                        eStr,
-                        fStr,
-                        escapeCsv(r.getStatus())));
-            }
-
-            writer.write(String.format("Tổng số môn,%d\n", transcript.getRecords().size()));
-            writer.write(String.format("Số môn hoàn thành,%d\n", transcript.getCompleteRecords().size()));
-            writer.write(String.format("Tín chỉ tích lũy,%d/%d\n", transcript.getCompletedCredits(), transcript.getTotalEnrolledCredits()));
-            writer.write(String.format("Điểm trung bình (GPA),%s\n", transcript.getFormattedGpa()));
-        }
-    }
-
-    public static void exportAllRecordsToCsv(List<GradeRecord> records, String targetFilePath) throws IOException {
-        if (records == null || targetFilePath == null) {
-            throw new IllegalArgumentException("Danh sách kết quả và đường dẫn không được null.");
-        }
-
-        File file = new File(targetFilePath);
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists()) {
-            parent.mkdirs();
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-            writer.write("\uFEFF");
-            writer.write("MSSV,Họ tên,Mã môn,Tên môn học,Loại môn,Số tín chỉ,Điểm quá trình,Điểm cuối kỳ,Điểm tổng kết,Trạng thái\n");
-
-            for (GradeRecord r : records) {
-                String pStr = r.getProcessScore() == null ? "" : String.format(Locale.US, "%.2f", r.getProcessScore());
-                String eStr = r.getExamScore() == null ? "" : String.format(Locale.US, "%.2f", r.getExamScore());
-                Double finalScore = r.getFinalScore();
-                String fStr = finalScore == null ? "" : String.format(Locale.US, "%.2f", finalScore);
-
-                writer.write(String.format("%s,%s,%s,%s,%s,%d,%s,%s,%s,%s\n",
-                        escapeCsv(r.getStudent().getStudentId()),
-                        escapeCsv(r.getStudent().getFullName()),
-                        escapeCsv(r.getCourse().getCourseId()),
-                        escapeCsv(r.getCourse().getCourseName()),
-                        escapeCsv(r.getCourse().getCourseType()),
-                        r.getCourse().getCredits(),
-                        pStr,
-                        eStr,
-                        fStr,
-                        escapeCsv(r.getStatus())));
-            }
-        }
-    }
-
-    private static String escapeCsv(String value) {
-        if (value == null) {
-            return "";
-        }
-        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
-            return "\"" + value.replace("\"", "\"\"") + "\"";
-        }
-        return value;
-=======
 /**
  * Lớp phụ trách xuất dữ liệu bảng điểm ra định dạng CSV chuẩn RFC 4180.
  * Phụ trách: Người 5 — Lưu/đọc file & CSV
- * 
- * Các tiêu chuẩn đáp ứng:
- * - Phân cách bằng dấu phẩy (,).
- * - Sử dụng dấu chấm thập phân (.) theo chuẩn quốc tế (Locale.US).
- * - Quote/escape đúng quy tắc CSV: chuỗi chứa dấu phẩy, dấu nháy kép hoặc xuống dòng được bọc trong cặp ngoặc kép ""; dấu " bên trong được nhân đôi thành "".
- * - Điểm thiếu để ô trống ("") kèm trạng thái "CHUA_DU_DIEM".
- * - Điểm 0 xuất đầy đủ "0.00".
- * - Mã hóa UTF-8 có hoặc không kèm BOM để mở tốt trên Microsoft Excel và các trình đọc bảng tính.
  */
 public class CsvExporter {
 
@@ -131,9 +26,6 @@ public class CsvExporter {
 
     /**
      * Chuẩn hóa và escape một ô (cell) dữ liệu theo chuẩn RFC 4180.
-     * 
-     * @param value Giá trị chuỗi gốc
-     * @return Chuỗi đã escape đúng quy tắc CSV
      */
     public static String escapeCsvCell(String value) {
         if (value == null) {
@@ -151,7 +43,7 @@ public class CsvExporter {
     /**
      * Định dạng điểm số cho CSV:
      * - null -> để trống ("")
-     * - số thực -> "%.2f" với dấu chấm thập phân (ví dụ: 6.60, 0.00)
+     * - số thực -> "%.2f" với dấu chấm thập phân theo chuẩn Locale.US
      */
     public static String formatScoreForCsv(Double score) {
         if (score == null) {
@@ -162,10 +54,6 @@ public class CsvExporter {
 
     /**
      * Tạo dòng CSV cho một bản ghi GradeRecord.
-     * 
-     * @param student Sinh viên sở hữu kết quả
-     * @param record Bản ghi điểm
-     * @return Dòng CSV phân cách bằng dấu phẩy
      */
     public static String formatRecordToCsvLine(Student student, GradeRecord record) {
         if (record == null || record.getCourse() == null) {
@@ -199,10 +87,6 @@ public class CsvExporter {
 
     /**
      * Xuất bảng điểm của một sinh viên ra file CSV (Ca kiểm thử D08).
-     * 
-     * @param transcript Bảng điểm của sinh viên
-     * @param targetFile File đích cần lưu
-     * @throws IOException nếu có lỗi ghi file
      */
     public static void exportTranscriptToCsv(Transcript transcript, File targetFile) throws IOException {
         if (transcript == null) {
@@ -271,6 +155,31 @@ public class CsvExporter {
             throw new IllegalArgumentException("Đường dẫn file không được để trống.");
         }
         exportTranscriptToCsv(transcript, new File(filePath.trim()));
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
+    }
+
+    /**
+     * Xuất toàn bộ danh sách điểm của tất cả sinh viên ra CSV.
+     */
+    public static void exportAllRecordsToCsv(List<GradeRecord> records, String targetFilePath) throws IOException {
+        if (records == null || targetFilePath == null) {
+            throw new IllegalArgumentException("Danh sách kết quả và đường dẫn không được null.");
+        }
+
+        File file = new File(targetFilePath);
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            writer.write('\uFEFF');
+            writer.write(CSV_HEADER);
+            writer.newLine();
+
+            for (GradeRecord r : records) {
+                writer.write(formatRecordToCsvLine(r.getStudent(), r));
+                writer.newLine();
+            }
+        }
     }
 }

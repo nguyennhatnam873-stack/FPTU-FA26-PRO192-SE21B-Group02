@@ -35,6 +35,10 @@ public class CourseManager implements Serializable {
         this.courses.add(course);
     }
 
+    public synchronized void addCourse(String type, String courseId, String courseName, int credits) {
+        this.addCourse(createCourse(type, courseId, courseName, credits));
+    }
+
     public Course findCourse(String id) {
         if (id == null) {
             return null;

@@ -1,48 +1,31 @@
 package studentgrademanager.services;
 
-<<<<<<< HEAD
 import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
-=======
 import java.util.ArrayList;
 import java.util.List;
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
+import java.util.Locale;
 import studentgrademanager.models.GradeRecord;
 import studentgrademanager.models.Student;
 import studentgrademanager.models.Transcript;
 
-<<<<<<< HEAD
-public class TranscriptService implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private StudentManager studentManager;
-    private GradeManager gradeManager;
-
-    public TranscriptService(StudentManager studentManager, GradeManager gradeManager) {
-        if (studentManager == null || gradeManager == null) {
-            throw new IllegalArgumentException("Các manager phụ thuộc không được null.");
-=======
 /**
  * Lớp dịch vụ tổng hợp Bảng điểm sinh viên.
  * Phụ trách: Người 1 — Bảng điểm & Điều phối
  */
-public class TranscriptService {
+public class TranscriptService implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final StudentManager studentManager;
     private final GradeManager gradeManager;
 
     public TranscriptService(StudentManager studentManager, GradeManager gradeManager) {
         if (studentManager == null || gradeManager == null) {
             throw new IllegalArgumentException("StudentManager và GradeManager không được null.");
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
         }
         this.studentManager = studentManager;
         this.gradeManager = gradeManager;
     }
 
-<<<<<<< HEAD
-    public Transcript generateTranscript(String studentId) {
-=======
     /**
      * Tạo bảng điểm cho sinh viên theo MSSV.
      * 
@@ -50,18 +33,37 @@ public class TranscriptService {
      * @return Đối tượng Transcript nếu tìm thấy sinh viên, hoặc null nếu không tìm thấy.
      */
     public Transcript getTranscript(String studentId) {
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
         Student student = this.studentManager.findStudent(studentId);
         if (student == null) {
             return null;
         }
-<<<<<<< HEAD
         List<GradeRecord> records = this.gradeManager.getRecordsByStudent(student.getStudentId());
         return new Transcript(student, records);
     }
 
+    /**
+     * Tương thích ngược với tên gọi generateTranscript.
+     */
+    public Transcript generateTranscript(String studentId) {
+        return this.getTranscript(studentId);
+    }
+
+    /**
+     * Lấy toàn bộ bảng điểm của tất cả sinh viên.
+     */
+    public List<Transcript> getAllTranscripts() {
+        List<Transcript> list = new ArrayList<Transcript>();
+        for (Student s : this.studentManager.getAllStudents()) {
+            list.add(this.getTranscript(s.getStudentId()));
+        }
+        return list;
+    }
+
+    /**
+     * In bảng điểm chi tiết của sinh viên ra console.
+     */
     public void printTranscript(String studentId) {
-        Transcript transcript = this.generateTranscript(studentId);
+        Transcript transcript = this.getTranscript(studentId);
         if (transcript == null) {
             System.out.println("Không tìm thấy sinh viên có mã: " + studentId);
             return;
@@ -115,20 +117,5 @@ public class TranscriptService {
             return text;
         }
         return text.substring(0, maxLength - 3) + "...";
-=======
-        List<GradeRecord> records = this.gradeManager.getRecordsByStudent(studentId);
-        return new Transcript(student, records);
-    }
-
-    /**
-     * Lấy toàn bộ bảng điểm của tất cả sinh viên.
-     */
-    public List<Transcript> getAllTranscripts() {
-        List<Transcript> list = new ArrayList<Transcript>();
-        for (Student s : this.studentManager.getAllStudents()) {
-            list.add(this.getTranscript(s.getStudentId()));
-        }
-        return list;
->>>>>>> d6e062820c9d101bd618de4c953b90d314bcbc27
     }
 }
