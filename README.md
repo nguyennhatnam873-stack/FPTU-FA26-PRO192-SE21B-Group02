@@ -31,6 +31,7 @@ Final-Project/
 │   │   └── AI_INTERACTION_LOG.md       # Nhật ký minh bạch sử dụng AI
 │   ├── BAO_CAO_NGUOI_1.md              # Báo cáo chi tiết của Người 1 (Trưởng nhóm / Bảng điểm)
 │   ├── BAO_CAO_NGUOI_2.md              # Báo cáo chi tiết của Người 2 (Môn học & Đánh giá)
+│   ├── BAO_CAO_NGUOI_3.md              # Báo cáo chi tiết của Người 3 (Sinh viên & Cặp SV–Môn)
 │   ├── BAO_CAO_NGUOI_4.md              # Báo cáo chi tiết của Người 4 (Nhập & Cập nhật điểm)
 │   ├── BAO_CAO_NGUOI_5.md              # Báo cáo chi tiết của Người 5 (Lưu/đọc file & CSV)
 │   └── checklist.html                  # Checklist 14 ngày & 11 task/thành viên

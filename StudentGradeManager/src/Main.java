@@ -11,15 +11,6 @@ import studentgrademanager.ui.MainMenu;
 public class Main {
 
     public static void main(String[] args) {
-        StudentManager studentManager = new StudentManager();
-        CourseManager courseManager = new CourseManager();
-        GradeManager gradeManager = new GradeManager();
-
-        MainMenu menu = new MainMenu(
-                studentManager,
-                courseManager,
-                gradeManager);
-
-        menu.start();
+        studentgrademanager.StudentGradeManager.main(args);
     }
 }

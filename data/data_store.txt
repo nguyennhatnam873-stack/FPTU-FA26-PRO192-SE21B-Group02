@@ -1,0 +1,16 @@
+# HỆ THỐNG QUẢN LÝ SINH VIÊN VÀ BẢNG ĐIỂM - PRO192 FA26
+# Lưu trữ tự động bởi FileDataStore (Người 5)
+
+[STUDENTS]
+QE210001|Nguyễn An
+QE210002|Trần Bình
+
+[COURSES]
+THEORY|LT101|Nhập môn lý thuyết|3
+PRACTICE|TH101|Thực hành cơ bản|2
+THEORY|LT102|Chuyên đề cơ sở|2
+
+[GRADES]
+QE210001|LT101|8.00|6.00
+QE210001|TH101|8.00|6.00
+QE210001|LT102|9.00|EMPTY
