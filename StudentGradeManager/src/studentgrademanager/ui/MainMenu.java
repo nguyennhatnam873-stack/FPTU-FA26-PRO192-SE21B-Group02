@@ -16,10 +16,7 @@ import studentgrademanager.services.TranscriptService;
 import studentgrademanager.storage.CsvExporter;
 import studentgrademanager.storage.FileDataStore;
 
-/**
- * Menu điều khiển Console chính của chương trình.
- * Phụ trách: Người 5 — Menu console & Giao diện người dùng
- */
+
 public class MainMenu {
 
     private final StudentManager studentManager;
@@ -39,7 +36,7 @@ public class MainMenu {
         this.transcriptService = new TranscriptService(this.studentManager, this.gradeManager);
         this.scanner = new Scanner(System.in);
 
-        // Đăng ký usage checker để bảo vệ không đổi tín chỉ khi môn đã có điểm
+
         this.courseManager.setUsageChecker(new CourseManager.CourseUsageChecker() {
             @Override
             public boolean hasGrades(String courseId) {
@@ -56,15 +53,13 @@ public class MainMenu {
         this(studentManager, courseManager, gradeManager, new FileDataStore());
     }
 
-    /**
-     * Vòng lặp giao diện chính của console.
-     */
+
     public void start() {
         System.out.println("======================================================================");
         System.out.println("   CHƯƠNG TRÌNH QUẢN LÝ SINH VIÊN VÀ BẢNG ĐIỂM (PRO192 - P05)");
         System.out.println("======================================================================");
 
-        // Khởi động: Kiểm tra file lưu trữ
+
         if (this.dataStore.exists()) {
             System.out.println(">>> Đang nạp dữ liệu từ file: " + this.dataStore.getDataFilePath());
             try {
@@ -139,7 +134,7 @@ public class MainMenu {
         System.out.println("----------------------------------------------------------------------");
     }
 
-    // ==================== 1. QUẢN LÝ SINH VIÊN ====================
+
 
     private void handleStudentManagement() {
         System.out.println("\n--- [1] QUẢN LÝ SINH VIÊN ---");
@@ -188,7 +183,7 @@ public class MainMenu {
         }
     }
 
-    // ==================== 2. QUẢN LÝ MÔN HỌC ====================
+
 
     private void handleCourseManagement() {
         System.out.println("\n--- [2] QUẢN LÝ MÔN HỌC ---");
@@ -250,7 +245,7 @@ public class MainMenu {
         }
     }
 
-    // ==================== 3. TẠO / CẬP NHẬT KẾT QUẢ ====================
+
 
     private void handleCreateOrUpdateGrade() {
         System.out.println("\n--- [3] TẠO / CẬP NHẬT KẾT QUẢ HỌC TẬP ---");
@@ -317,7 +312,7 @@ public class MainMenu {
         }
     }
 
-    // ==================== 4. XEM KẾT QUẢ MÔN HỌC ====================
+
 
     private void handleViewCourseGrades() {
         System.out.println("\n--- [4] XEM KẾT QUẢ MÔN HỌC ---");
@@ -350,7 +345,7 @@ public class MainMenu {
         }
     }
 
-    // ==================== 5. XEM BẢNG ĐIỂM SINH VIÊN ====================
+
 
     private void handleViewStudentTranscript() {
         System.out.println("\n--- [5] XEM BẢNG ĐIỂM SINH VIÊN ---");
@@ -388,7 +383,7 @@ public class MainMenu {
         System.out.println("===========================================================================");
     }
 
-    // ==================== 6. XEM ĐIỂM TRUNG BÌNH CÓ TRỌNG SỐ ====================
+
 
     private void handleViewWeightedGPA() {
         System.out.println("\n--- [6] XEM ĐIỂM TRUNG BÌNH CÓ TRỌNG SỐ (GPA) ---");
@@ -414,7 +409,7 @@ public class MainMenu {
         System.out.printf("Số tín chỉ hoàn thành: %d/%d tín chỉ\n", transcript.getCompletedCredits(), transcript.getTotalCredits());
     }
 
-    // ==================== 7. XUẤT CSV ====================
+
 
     private void handleExportCsv() {
         System.out.println("\n--- [7] XUẤT BẢNG ĐIỂM RA FILE CSV (RFC 4180) ---");
@@ -440,7 +435,7 @@ public class MainMenu {
         }
     }
 
-    // ==================== 8. QUẢN LÝ LƯU TRỮ ====================
+
 
     private void handleFileStorageMenu() {
         System.out.println("\n--- [8] QUẢN LÝ LƯU TRỮ DỮ LIỆU ---");
@@ -493,7 +488,7 @@ public class MainMenu {
         }
     }
 
-    // ==================== 0. THOÁT ====================
+
 
     private boolean handleExit() {
         if (this.isModified) {
@@ -506,13 +501,13 @@ public class MainMenu {
                     System.err.println("Lỗi lưu file: " + e.getMessage());
                     String force = this.readLine("Vẫn muốn thoát không lưu? (y/n): ").trim();
                     if (!"y".equalsIgnoreCase(force)) {
-                        return true; // Không thoát, ở lại
+                        return true; 
                     }
                 }
             }
         }
         System.out.println("Cảm ơn bạn đã sử dụng chương trình. Tạm biệt!");
-        return false; // Dừng vòng lặp
+        return false; 
     }
 
     private String readLine(String prompt) {
