@@ -48,4 +48,4 @@ public abstract class Course implements Serializable {
     public String getName() {
         return this.name;
     }
-                
+}           

@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -96,12 +96,12 @@ public class GradeRecord implements Serializable {
         this.processScore = processScore;
     }
 
->>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
+
     public Double getExamScore() {
         return this.examScore;
     }
 
-<<<<<<< HEAD
+
     public void updateProcessScore(Double score) {
         validateScore(score);
         this.processScore = score;
@@ -133,7 +133,6 @@ public class GradeRecord implements Serializable {
         return this.course.calculateFinalGrade(
                 this.processScore,
                 this.examScore);
-=======
     public void setExamScore(Double examScore) {
         if (!isValidScore(examScore)) {
             throw new IllegalArgumentException("Diem cuoi ki phai nam trong doan [0, 10] hoac null.");
@@ -192,12 +191,10 @@ public class GradeRecord implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(this.student.getStudentId(), this.course.getCourseId());
->>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
     }
 
     @Override
     public String toString() {
-<<<<<<< HEAD
         String process = processScore == null
                 ? "Chua co" : processScore.toString();
 
@@ -212,7 +209,6 @@ public class GradeRecord implements Serializable {
                 + course.getCode() + " | "
                 + process + " | "
                 + exam + " | " + result;
-=======
         String processStr = this.processScore == null ? "-" : String.format("%.2f", this.processScore);
         String examStr = this.examScore == null ? "-" : String.format("%.2f", this.examScore);
         Double finalScore = this.getFinalScore();
@@ -220,6 +216,6 @@ public class GradeRecord implements Serializable {
         return String.format("[%s] %s | %s | QT: %s | CK: %s | TK: %s",
                 this.getStatus(), this.student.getStudentId(), this.course.getCourseId(),
                 processStr, examStr, finalStr);
->>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
+
     }
 }
