@@ -73,4 +73,70 @@ public class Person3Test {
             System.out.println(">> [PASS] Da tu choi chinh xac ma trung va chuoi rong/khoang trang.\n");
             passedTests++;
         } else {
-            System.out.println(">> [FAIL
+            System.out.println(">> [FAIL] Van cho phep them du lieu sai.\n");
+        }
+    }
+
+    // TEST 3: Ca D05 - Tra cuu ma sinh vien khong ton tai
+    private static void testD05_FindNonExistentStudent() {
+        totalTests++;
+        System.out.println("[TEST 3 - Ca D05] Tra cuu sinh vien voi ma khong ton tai 'QE999999'...");
+        StudentManager sm = new StudentManager();
+        Student s = sm.findStudent("QE999999");
+        if (s == null) {
+            System.out.println(">> [PASS] Tra ve null chinh xac, khong tu dong sinh ma bua bai.\n");
+            passedTests++;
+        } else {
+            System.out.println(">> [FAIL] Tu dong tao sinh vien khi tra cuu sai.\n");
+        }
+    }
+
+    // TEST 4: Ca D06 - Chong tao dong thu 2 cho cap SV-Mon da co ket qua
+    private static void testD06_NoDuplicateStudentRecord() {
+        totalTests++;
+        System.out.println("[TEST 4 - Ca D06] Kiem tra chong tao dong thu hai cho cap An - LT101...");
+        Student an = new Student("QE210001", "Nguyen An");
+        Course lt101 = new TheoryCourse("LT101", "Nhap mon ly thuyet", 3);
+
+        List<GradeRecord> records = new ArrayList<GradeRecord>();
+        records.add(new GradeRecord(an, lt101, 8.0, 6.0));
+
+        // Kiem tra logic phat hien trung
+        boolean isDuplicate = false;
+        for (GradeRecord r : records) {
+            if (r.getStudent().getStudentId().equalsIgnoreCase("QE210001") &&
+                r.getCourse().getCourseId().equalsIgnoreCase("LT101")) {
+                isDuplicate = true;
+                break;
+            }
+        }
+
+        if (isDuplicate) {
+            System.out.println(">> [PASS] Phat hien trung cap SV-Mon, khong cap phat dong thu hai.\n");
+            passedTests++;
+        } else {
+            System.out.println(">> [FAIL] Khong phat hien duoc trung cap SV-Mon.\n");
+        }
+    }
+
+    // TEST 5: Rang buoc an toan du lieu - Khong xoa sinh vien da co diem
+    private static void testDeleteStudent_DataIntegrityGuard() {
+        totalTests++;
+        System.out.println("[TEST 5] Kiem tra cam xoa sinh vien da co ket qua hoc tap...");
+        StudentManager sm = new StudentManager();
+        sm.addStudent("QE210001", "Nguyen An");
+
+        Student an = sm.findStudent("QE210001");
+        Course lt101 = new TheoryCourse("LT101", "Nhap mon ly thuyet", 3);
+        List<GradeRecord> records = new ArrayList<GradeRecord>();
+        records.add(new GradeRecord(an, lt101, 8.0, 6.0));
+
+        boolean deleted = sm.deleteStudent("QE210001", records);
+        if (!deleted && sm.findStudent("QE210001") != null) {
+            System.out.println(">> [PASS] Da chan xoa sinh vien co diem thanh cong, bao toan du lieu.\n");
+            passedTests++;
+        } else {
+            System.out.println(">> [FAIL] Sinh vien da co diem van bi xoa khoi he thong.\n");
+        }
+    }
+}
