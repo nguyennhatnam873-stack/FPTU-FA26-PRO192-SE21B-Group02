@@ -4,7 +4,7 @@ public class PracticeCourse extends Course {
     private static final long serialVersionUID = 1L;
 
     public static final String TYPE_CODE = "PRACTICE";
-    public static final String TYPE_NAME = "Thực hành";
+    public static final String TYPE_NAME = "Thuc hanh";
 
     public static final double PROCESS_WEIGHT = 0.50;
     public static final double FINAL_EXAM_WEIGHT = 0.50;
