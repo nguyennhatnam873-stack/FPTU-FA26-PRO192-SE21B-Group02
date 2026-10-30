@@ -20,16 +20,16 @@ public class GradeRecord implements Serializable {
 
     public GradeRecord(Student student, Course course, Double processScore, Double examScore) {
         if (student == null) {
-            throw new IllegalArgumentException("Sinh viên không được để null.");
+            throw new IllegalArgumentException("Sinh vien khong duoc de null.");
         }
         if (course == null) {
-            throw new IllegalArgumentException("Môn học không được để null.");
+            throw new IllegalArgumentException("Mon hoc khong duoc de null.");
         }
         if (!isValidScore(processScore)) {
-            throw new IllegalArgumentException("Điểm quá trình phải nằm trong đoạn [0, 10] hoặc null.");
+            throw new IllegalArgumentException("Diem qua trinh phai nam trong doan [0, 10] hoac null.");
         }
         if (!isValidScore(examScore)) {
-            throw new IllegalArgumentException("Điểm cuối kỳ phải nằm trong đoạn [0, 10] hoặc null.");
+            throw new IllegalArgumentException("Diem cuoi ki phai nam trong doan [0, 10] hoac null.");
         }
         this.student = student;
         this.course = course;
@@ -58,7 +58,7 @@ public class GradeRecord implements Serializable {
 
     public void setProcessScore(Double processScore) {
         if (!isValidScore(processScore)) {
-            throw new IllegalArgumentException("Điểm quá trình phải nằm trong đoạn [0, 10] hoặc null.");
+            throw new IllegalArgumentException("Diem qua trinh phai nam trong doan [0, 10] hoac null.");
         }
         this.processScore = processScore;
     }
@@ -69,7 +69,7 @@ public class GradeRecord implements Serializable {
 
     public void setExamScore(Double examScore) {
         if (!isValidScore(examScore)) {
-            throw new IllegalArgumentException("Điểm cuối kỳ phải nằm trong đoạn [0, 10] hoặc null.");
+            throw new IllegalArgumentException("Diem cuoi ki phai nam trong doan [0, 10] hoac null.");
         }
         this.examScore = examScore;
     }
