@@ -11,10 +11,10 @@ public class Student implements Serializable {
 
     public Student(String studentId, String fullName) {
         if (!isValidStudentId(studentId)) {
-            throw new IllegalArgumentException("Mã số sinh viên không được để trống.");
+            throw new IllegalArgumentException("Ma so sinh vien khong duoc de trong.");
         }
         if (!isValidFullName(fullName)) {
-            throw new IllegalArgumentException("Họ tên sinh viên không được để trống.");
+            throw new IllegalArgumentException("Ho ten sinh vien khong duoc de trong.");
         }
         this.studentId = studentId.trim().toUpperCase();
         this.fullName = fullName.trim();
@@ -34,7 +34,7 @@ public class Student implements Serializable {
 
     public void setStudentId(String studentId) {
         if (!isValidStudentId(studentId)) {
-            throw new IllegalArgumentException("Mã số sinh viên không được để trống.");
+            throw new IllegalArgumentException("Ma so sinh vien khong duoc de trong.");
         }
         this.studentId = studentId.trim().toUpperCase();
     }
@@ -45,7 +45,7 @@ public class Student implements Serializable {
 
     public void setFullName(String fullName) {
         if (!isValidFullName(fullName)) {
-            throw new IllegalArgumentException("Họ tên sinh viên không được để trống.");
+            throw new IllegalArgumentException("Ho ten sinh vien khong duoc de trong.");
         }
         this.fullName = fullName.trim();
     }
