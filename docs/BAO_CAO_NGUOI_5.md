@@ -158,29 +158,3 @@ Nhóm lựa chọn định dạng file văn bản UTF-8 có cấu trúc Section 
 
 ---
 
-## 5. Chuẩn bị Vấn đáp & Câu hỏi Bảo vệ
-
-### Câu 1: Tại sao bạn lại chọn lưu file văn bản dạng Text (Section-based) thay vì Java Serialization (`ObjectOutputStream`)?
-- **Trả lời:**
-  - Định dạng văn bản phân đoạn (`[STUDENTS]`, `[COURSES]`, `[GRADES]`) có tính minh bạch cao, người dùng và giảng viên có thể mở ra đọc, kiểm tra trực tiếp mà không cần công cụ đặc biệt.
-  - Tránh được lỗi `InvalidClassException` do xung đột `serialVersionUID` khi nhóm cập nhật các thuộc tính trong lớp Model.
-  - Dễ dàng di chuyển dữ liệu giữa các nền tảng và dễ phục hồi nếu chỉ có một phần nhỏ dữ liệu bị lỗi.
-
-### Câu 2: Làm thế nào chương trình đảm bảo khi đang lưu file mà mất điện hoặc lỗi đĩa thì file dữ liệu cũ không bị mất trắng?
-- **Trả lời:** Em sử dụng kỹ thuật **Atomic Save**:
-  - Dữ liệu được ghi vào một file tạm trước: `data/data_store.txt.tmp`.
-  - Chỉ khi file tạm được ghi và đóng (`flush` + `close`) thành công trọn vẹn, em mới thực hiện thay thế file chính thức bằng phương thức `renameTo()`.
-  - Nếu quá trình ghi bị ngắt quãng, file tạm bị hủy, file `data_store.txt` cũ vẫn còn nguyên vẹn 100%.
-
-### Câu 3: Điểm 0 và điểm thiếu được lưu và nạp khác nhau như thế nào?
-- **Trả lời:**
-  - Điểm thiếu (chưa thi / vắng) có giá trị trong Java là `null`. Khi lưu ra file, em ghi từ khóa `EMPTY`. Khi nạp lại, chương trình kiểm tra nếu gặp `EMPTY` thì gán lại là `null`.
-  - Điểm 0 là điểm số thực tế hợp lệ. Khi lưu, em ghi `0.00`. Khi nạp lại, chương trình parse thành số thực `0.0`.
-  - Nhờ đó, điểm 0 vẫn tham gia tính toán điểm tổng kết theo công thức, còn điểm thiếu làm trạng thái môn học thành `CHUA_DU_DIEM` và không tham gia tính GPA.
-
-### Câu 4: Nếu thầy yêu cầu đổi dấu phân cách CSV từ dấu phẩy `,` sang dấu chấm phẩy `;` thì bạn sửa ở đâu?
-- **Trả lời:** Em chỉ cần thay đổi trong một lớp duy nhất là [CsvExporter.java](file:///d:/FALL%2026/PRO192/Final-Project/StudentGradeManager/src/studentgrademanager/storage/CsvExporter.java):
-  - Sửa hằng số header: thay `,` bằng `;`.
-  - Trong phương thức `formatRecordToCsvLine()`, sửa ký tự nối `.append(";")`.
-  - Trong phương thức `escapeCsvCell()`, kiểm tra `text.contains(";")` thay vì `contains(",")`.
-  - Toàn bộ các phần khác của hệ thống không bị ảnh hưởng do kiến trúc đã tách rời trách nhiệm độc lập.
