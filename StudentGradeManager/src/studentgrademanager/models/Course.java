@@ -15,13 +15,13 @@ public abstract class Course implements Serializable {
 
     public Course(String courseId, String courseName, int credits) {
         if (!isValidCourseId(courseId)) {
-            throw new IllegalArgumentException("Mã môn học không được để trống.");
+            throw new IllegalArgumentException("Ma mon hoc khong đuoc đe trong.");
         }
         if (!isValidCourseName(courseName)) {
-            throw new IllegalArgumentException("Tên môn học không được để trống.");
+            throw new IllegalArgumentException("Ten mon hoc khong đuoc đe trong..");
         }
         if (!isValidCredits(credits)) {
-            throw new IllegalArgumentException("Số tín chỉ phải là số nguyên từ " + MIN_CREDITS + " đến " + MAX_CREDITS + ".");
+            throw new IllegalArgumentException("So tin chi phai la so nguyen tu " + MIN_CREDITS + " đen " + MAX_CREDITS + ".");
         }
 
         this.courseId = courseId.trim().toUpperCase();
@@ -76,14 +76,14 @@ public abstract class Course implements Serializable {
 
     public void setCourseName(String courseName) {
         if (!isValidCourseName(courseName)) {
-            throw new IllegalArgumentException("Tên môn học không được để trống.");
+            throw new IllegalArgumentException("Ten mon hoc khong đuoc đe trong.");
         }
         this.courseName = courseName.trim();
     }
 
     public void setCredits(int credits) {
         if (!isValidCredits(credits)) {
-            throw new IllegalArgumentException("Số tín chỉ phải là số nguyên từ " + MIN_CREDITS + " đến " + MAX_CREDITS + ".");
+            throw new IllegalArgumentException("So tin chi phai la so nguyen tu " + MIN_CREDITS + " đen " + MAX_CREDITS + ".");
         }
         this.credits = credits;
     }
