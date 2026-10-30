@@ -4,7 +4,7 @@ public class TheoryCourse extends Course {
     private static final long serialVersionUID = 1L;
 
     public static final String TYPE_CODE = "THEORY";
-    public static final String TYPE_NAME = "Lý thuyết";
+    public static final String TYPE_NAME = "Ly thuyet";
 
     public static final double PROCESS_WEIGHT = 0.30;
     public static final double FINAL_EXAM_WEIGHT = 0.70;
