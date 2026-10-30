@@ -39,6 +39,7 @@ public class CourseManager {
         courses.put(code, course);
     }
 
+<<<<<<< HEAD
 
     public void addTheoryCourse(
             String code, String name, int credits) {
@@ -56,6 +57,14 @@ public class CourseManager {
 
     public Course findCourse(String code) {
         if (code == null || code.trim().isEmpty()) {
+=======
+    public synchronized void addCourse(String type, String courseId, String courseName, int credits) {
+        this.addCourse(createCourse(type, courseId, courseName, credits));
+    }
+
+    public Course findCourse(String id) {
+        if (id == null) {
+>>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
             return null;
         }
 

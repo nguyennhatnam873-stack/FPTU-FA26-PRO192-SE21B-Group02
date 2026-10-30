@@ -22,8 +22,13 @@ public class CourseTest {
                 new PracticeCourse("LAB211", "Java Lab", 2);
 
         System.out.println("=== KIEM THU D01 ===");
+<<<<<<< HEAD
         test("Ly thuyet", theory.calculateFinalGrade(8, 6), 6.6);
         test("Thuc hanh", practice.calculateFinalGrade(8, 6), 7.0);
+=======
+        test("Ly thuyet", theory.calculateFinalGrade(8.0, 6.0), 6.6);
+        test("Thuc hanh", practice.calculateFinalGrade(8.0, 6.0), 7.0);
+>>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
 
         System.out.println("\n=== KIEM THU D11 ===");
         try {
@@ -42,7 +47,11 @@ public class CourseTest {
 
         System.out.println("\n=== KIEM THU DIEM SAI ===");
         try {
+<<<<<<< HEAD
             theory.calculateFinalGrade(11, 6);
+=======
+            theory.calculateFinalGrade(11.0, 6.0);
+>>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
             System.out.println("FAIL: Diem vuot 10");
         } catch (IllegalArgumentException e) {
             System.out.println("PASS: Tu choi diem vuot 10");

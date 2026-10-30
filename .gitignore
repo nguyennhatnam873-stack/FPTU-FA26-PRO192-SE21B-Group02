@@ -7,3 +7,10 @@
 .DS_Store
 Thumbs.db
 
+# Compiled class files
+*.class
+
+# Test outputs
+test_output/
+
+
