@@ -3,70 +3,48 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-/**
- *
- * @author ASUS-PRO
- */
+package studentgrademanager.models;
 
-import studentgrademanager.models.Course;
-import studentgrademanager.models.TheoryCourse;
-import studentgrademanager.models.PracticeCourse;
+import java.io.Serializable;
+import java.util.Locale;
 
-public class CourseTest {
+public abstract class Course implements Serializable {
 
-    public static void main(String[] args) {
-        Course theory =
-                new TheoryCourse("PRO192", "Java OOP", 3);
+    private static final long serialVersionUID = 1L;
 
-        Course practice =
-                new PracticeCourse("LAB211", "Java Lab", 2);
+    private final String code;
+    private final String name;
+    private final int credits;
 
-        System.out.println("=== KIEM THU D01 ===");
-<<<<<<< HEAD
-        test("Ly thuyet", theory.calculateFinalGrade(8, 6), 6.6);
-        test("Thuc hanh", practice.calculateFinalGrade(8, 6), 7.0);
-=======
-        test("Ly thuyet", theory.calculateFinalGrade(8.0, 6.0), 6.6);
-        test("Thuc hanh", practice.calculateFinalGrade(8.0, 6.0), 7.0);
->>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
-
-        System.out.println("\n=== KIEM THU D11 ===");
-        try {
-            new TheoryCourse("TEST", "Mon thu", 0);
-            System.out.println("FAIL: Tin chi 0");
-        } catch (IllegalArgumentException e) {
-            System.out.println("PASS: Tu choi tin chi 0");
+    public Course(String code, String name, int credits) {
+        if (code == null || code.trim().isEmpty()) {
+            throw new IllegalArgumentException("Ma mon khong duoc rong.");
         }
 
-        try {
-            new TheoryCourse("TEST2", "Mon thu", 7);
-            System.out.println("FAIL: Tin chi 7");
-        } catch (IllegalArgumentException e) {
-            System.out.println("PASS: Tu choi tin chi 7");
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Ten mon khong duoc rong.");
+        }
+        if (credits < 1 || credits > 6) {
+            throw new IllegalArgumentException("Tin chi phai tu 1 den 6.");
         }
 
-        System.out.println("\n=== KIEM THU DIEM SAI ===");
-        try {
-<<<<<<< HEAD
-            theory.calculateFinalGrade(11, 6);
-=======
-            theory.calculateFinalGrade(11.0, 6.0);
->>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
-            System.out.println("FAIL: Diem vuot 10");
-        } catch (IllegalArgumentException e) {
-            System.out.println("PASS: Tu choi diem vuot 10");
-        }
+        this.code = code.trim().toUpperCase(Locale.ROOT);
+        this.name = name.trim();
+        this.credits = credits;
     }
 
-    private static void test(
-            String name, double actual, double expected) {
-        if (Math.abs(actual - expected) < 0.000001) {
-            System.out.printf(
-                    "PASS: %s = %.2f%n", name, actual);
-        } else {
-            System.out.printf(
-                    "FAIL: %s, mong doi %.2f, thuc te %.2f%n",
-                    name, expected, actual);
-        }
+    public String getCode() {
+        return this.code;
     }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public int getCredits() {
+        return this.credits;
+    }
+
+    public abstract double calculateFinalGrade(double processScore,double examScore);
+    public abstract String getCourseType();
 }

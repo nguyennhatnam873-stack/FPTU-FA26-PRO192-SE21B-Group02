@@ -28,12 +28,11 @@ public class GradeRecord implements Serializable {
 
     private Student student;
     private Course course;
->>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
+
     private Double processScore;
     private Double examScore;
 
     public GradeRecord(Student student, Course course) {
-<<<<<<< HEAD
         if (student == null) {
             throw new IllegalArgumentException(
                     "Sinh vien khong duoc null.");
@@ -48,7 +47,7 @@ public class GradeRecord implements Serializable {
         this.course = course;
         this.processScore = null;
         this.examScore = null;
-=======
+
         this(student, course, null, null);
     }
 
@@ -76,7 +75,6 @@ public class GradeRecord implements Serializable {
             return true;
         }
         return score >= 0.0 && score <= 10.0 && !Double.isNaN(score) && !Double.isInfinite(score);
->>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
     }
 
     public Student getStudent() {
@@ -91,8 +89,6 @@ public class GradeRecord implements Serializable {
         return this.processScore;
     }
 
-<<<<<<< HEAD
-=======
     public void setProcessScore(Double processScore) {
         if (!isValidScore(processScore)) {
             throw new IllegalArgumentException("Diem qua trinh phai nam trong doan [0, 10] hoac null.");
