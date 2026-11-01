@@ -109,13 +109,11 @@ public class GradeManager implements Serializable {
 
         GradeRecord existing = this.findRecord(student.getStudentId(), course.getCode());
         if (existing != null) {
-            existing.updateProcessScore(processScore);
-            existing.updateExamScore(examScore);
+            existing.setProcessScore(processScore);
+            existing.setExamScore(examScore);
             return existing;
         } else {
-            GradeRecord newRecord = new GradeRecord(student, course);
-            newRecord.updateProcessScore(processScore);
-            newRecord.updateExamScore(examScore);
+            GradeRecord newRecord = new GradeRecord(student, course, processScore, examScore);
             this.records.add(newRecord);
             return newRecord;
         }
@@ -131,8 +129,8 @@ public class GradeManager implements Serializable {
         }
         GradeRecord existing = this.findRecord(record.getStudent().getStudentId(), record.getCourse().getCode());
         if (existing != null) {
-            existing.updateProcessScore(record.getProcessScore());
-            existing.updateExamScore(record.getExamScore());
+            existing.setProcessScore(record.getProcessScore());
+            existing.setExamScore(record.getExamScore());
         } else {
             this.records.add(record);
         }
@@ -227,4 +225,3 @@ public class GradeManager implements Serializable {
         }
     }
 }
-	
