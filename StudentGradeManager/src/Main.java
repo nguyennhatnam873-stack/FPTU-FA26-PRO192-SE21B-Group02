@@ -24,6 +24,5 @@ public class Main {
         menu.start();
 =======
         studentgrademanager.StudentGradeManager.main(args);
->>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
     }
 }
