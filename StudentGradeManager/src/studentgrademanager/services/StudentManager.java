@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package studentgrademanager.services;
 
-/**
- *
- * @author Admin
- */
 import java.util.ArrayList;
 import java.util.List;
 import studentgrademanager.models.GradeRecord;
@@ -62,6 +54,14 @@ public class StudentManager {
 
     public List<Student> getAllStudents() {
         return this.students;
+    }
+
+    public int getStudentCount() {
+        return this.students.size();
+    }
+
+    public boolean exists(String studentId) {
+        return this.findStudent(studentId) != null;
     }
 
     public void clear() {
