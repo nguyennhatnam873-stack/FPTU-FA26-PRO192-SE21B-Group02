@@ -48,4 +48,32 @@ public abstract class Course implements Serializable {
     public String getName() {
         return this.name;
     }
+    public String getCourseId() {
+        return this.code;
+    }
+    public String getCourseName() {
+        return this.name;
+    }
+    public int getCredits() {
+        return this.credits;
+    }
+    public static final int MIN_CREDITS = 1;
+    public static final int MAX_CREDITS = 6;
+    public abstract double calculateFinalScore(double process, double exam);
+    public abstract String getCourseType();
+    public abstract String getTypeCode();
+    public abstract double getProcessWeight();
+    public abstract double getFinalExamWeight();
+    public Double calculateFinalScore(Double process, Double exam) {
+        if (process == null || exam == null) return null;
+        return calculateFinalScore(process.doubleValue(), exam.doubleValue());
+    }
+    public Double calculateFinalGrade(Double processGrade, Double finalExamGrade) {
+        return calculateFinalScore(processGrade, finalExamGrade);
+    }
+    public void setCredits(int credits) {
+        if (credits < MIN_CREDITS || credits > MAX_CREDITS) {
+            throw new IllegalArgumentException("So tin chi phai tu " + MIN_CREDITS + " den " + MAX_CREDITS + ".");
+        }
+    }
 }           

@@ -277,6 +277,10 @@ public class FileDataStore{
         Course th101 = CourseManager.createCourse("PRACTICE", "TH101", "Thuc hanh co ban", 2);
         Course lt102 = CourseManager.createCourse("THEORY", "LT102", "Chuyen de co so", 2);
         
+        courseManager.addCourse(lt101);
+        courseManager.addCourse(th101);
+        courseManager.addCourse(lt102);
+        
         gradeManager.createOrUpdateRecord(an, lt101, 8.0, 6.0);
         gradeManager.createOrUpdateRecord(an, th101, 8.0, 6.0);
         gradeManager.createOrUpdateRecord(an, lt102, 9.0, null);

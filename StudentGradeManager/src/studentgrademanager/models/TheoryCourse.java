@@ -13,7 +13,6 @@ public class TheoryCourse extends Course {
         super(code, name, credits);
     }
 
-    @Override
     public double calculateFinalGrade(
             double processScore, double examScore) {
 
@@ -26,6 +25,18 @@ public class TheoryCourse extends Course {
 
     @Override
     public String getCourseType() {
-        return "LY_THUYET";
+        return "Lý thuyết";
     }
+    @Override
+    public double calculateFinalScore(double process, double exam) {
+        return calculateFinalGrade(process, exam);
+    }
+    @Override
+    public Double calculateFinalGrade(Double processGrade, Double finalExamGrade) {
+        if (processGrade == null || finalExamGrade == null) return null;
+        return calculateFinalGrade(processGrade.doubleValue(), finalExamGrade.doubleValue());
+    }
+    @Override public String getTypeCode() { return "THEORY"; }
+    @Override public double getProcessWeight() { return 0.30; }
+    @Override public double getFinalExamWeight() { return 0.70; }
 }

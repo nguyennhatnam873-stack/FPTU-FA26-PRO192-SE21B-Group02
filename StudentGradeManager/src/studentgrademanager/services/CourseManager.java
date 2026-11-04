@@ -39,8 +39,6 @@ public class CourseManager {
         courses.put(code, course);
     }
 
-<<<<<<< HEAD
-
     public void addTheoryCourse(
             String code, String name, int credits) {
 
@@ -55,21 +53,17 @@ public class CourseManager {
         addCourse(course);
     }
 
-    public Course findCourse(String code) {
-        if (code == null || code.trim().isEmpty()) {
-=======
     public synchronized void addCourse(String type, String courseId, String courseName, int credits) {
         this.addCourse(createCourse(type, courseId, courseName, credits));
     }
-
     public Course findCourse(String id) {
-        if (id == null) {
->>>>>>> 3334af96dba2628c53fb827495ab5c6fe1d14b04
+        if (id == null || id.trim().isEmpty()) {
             return null;
         }
-
-        return courses.get(
-                code.trim().toUpperCase(Locale.ROOT));
+        return courses.get(id.trim().toUpperCase(Locale.ROOT));
+    }
+    public Course findCourseById(String id) {
+        return findCourse(id);
     }
 
 
@@ -92,12 +86,59 @@ public class CourseManager {
         return courses.size();
     }
     
-public void loadCourses(List<Course> data) {
+    public void loadCourses(List<Course> data) {
     courses.clear();
 
-    for (Course course : data) {
-        addCourse(course);
+        for (Course course : data) {
+            addCourse(course);
+        }
     }
-}
-
+    public synchronized void clear() {
+        this.courses.clear();
+    }
+    public interface CourseUsageChecker {
+        boolean hasGrades(String courseId);
+    }
+    private CourseUsageChecker usageChecker;
+    public synchronized void setUsageChecker(CourseUsageChecker checker) {
+        this.usageChecker = checker;
+    }
+    public synchronized boolean canModifyCourse(String courseId) {
+        if (usageChecker == null) return true;
+        return !usageChecker.hasGrades(courseId);
+    }
+    public synchronized boolean updateCourseCredits(String courseId, int newCredits) {
+        if (!canModifyCourse(courseId)) {
+            throw new IllegalStateException("Khong the sua tin chi cua mon hoc da co sinh vien dang ky!");
+        }
+        Course c = findCourse(courseId);
+        if (c == null) return false;
+        c.setCredits(newCredits);
+        return true;
+    }
+    public static int parseAndValidateCredits(String rawCredits) {
+        if (rawCredits == null || rawCredits.trim().isEmpty()) {
+            throw new IllegalArgumentException("So tin chi khong duoc de trong.");
+        }
+        try {
+            int credits = Integer.parseInt(rawCredits.trim());
+            if (credits < Course.MIN_CREDITS || credits > Course.MAX_CREDITS) {
+                throw new IllegalArgumentException("So tin chi phai tu " + Course.MIN_CREDITS + " den " + Course.MAX_CREDITS + ".");
+            }
+            return credits;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("So tin chi phai la so nguyen hop le.");
+        }
+    }
+    public static Course createCourse(String type, String courseId, String courseName, int credits) {
+        if (type == null) throw new IllegalArgumentException("Loai mon hoc khong duoc de trong.");
+        String cleanType = type.trim().toUpperCase(Locale.ROOT);
+        if ("THEORY".equals(cleanType) || "LY THUYET".equals(cleanType) || "LY_THUYET".equals(cleanType)) {
+            return new TheoryCourse(courseId, courseName, credits);
+        } else if ("PRACTICE".equals(cleanType) || "THUC HANH".equals(cleanType) || "THUC_HANH".equals(cleanType)) {
+            return new PracticeCourse(courseId, courseName, credits);
+        } else {
+            throw new IllegalArgumentException("Loai mon hoc khong hop le.");
+        }
+    }
 }
