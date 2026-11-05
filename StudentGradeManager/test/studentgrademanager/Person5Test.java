@@ -20,10 +20,7 @@ import studentgrademanager.services.TranscriptService;
 import studentgrademanager.storage.CsvExporter;
 import studentgrademanager.storage.FileDataStore;
 
-/**
- * Bộ kiểm thử tự động cho Người 5 — Lưu/đọc file & CSV.
- * Phụ trách các ca kiểm thử: D08, D09, D10 và các ca mở rộng.
- */
+
 public class Person5Test {
 
     private static int totalTests = 0;
@@ -64,14 +61,7 @@ public class Person5Test {
         }
     }
 
-    /**
-     * Ca D08: Xuất CSV bảng điểm An (dữ liệu mẫu)
-     * - CSV header + 3 dòng chi tiết
-     * - LT101: 8.00, 6.00, 6.60, DU_DIEM
-     * - TH101: 8.00, 6.00, 7.00, DU_DIEM
-     * - LT102: 9.00, trống, trống, CHUA_DU_DIEM
-     * - Dấu phẩy phân cách, dấu chấm thập phân.
-     */
+
     private static void testD08_ExportAnTranscriptToCsv() {
         System.out.println("--- Kiểm thử Ca D08: Xuất CSV bảng điểm mẫu của An ---");
 
@@ -100,7 +90,7 @@ public class Person5Test {
             boolean headerOk = header.contains("MSSV") && header.contains("Diem qua trinh") && header.contains("Trang thai");
             assertTrue("D08 - Nội dung Header hợp lệ", headerOk, header);
 
-            // Kiểm tra dòng 1: LT101 (8.00, 6.00, 6.60, DU_DIEM)
+
             String lineLT101 = findLineContaining(lines, "LT101");
             boolean lt101Ok = lineLT101 != null 
                     && lineLT101.contains("8.00") 
@@ -109,7 +99,7 @@ public class Person5Test {
                     && lineLT101.contains(CsvExporter.STATUS_COMPLETE);
             assertTrue("D08 - Dòng LT101 đầy đủ điểm", lt101Ok, lineLT101);
 
-            // Kiểm tra dòng 2: TH101 (8.00, 6.00, 7.00, DU_DIEM)
+
             String lineTH101 = findLineContaining(lines, "TH101");
             boolean th101Ok = lineTH101 != null 
                     && lineTH101.contains("8.00") 
@@ -118,7 +108,7 @@ public class Person5Test {
                     && lineTH101.contains(CsvExporter.STATUS_COMPLETE);
             assertTrue("D08 - Dòng TH101 đầy đủ điểm", th101Ok, lineTH101);
 
-            // Kiểm tra dòng 3: LT102 (9.00, ô trống, ô trống, CHUA_DU_DIEM)
+
             String lineLT102 = findLineContaining(lines, "LT102");
             boolean lt102Ok = lineLT102 != null 
                     && lineLT102.contains("9.00") 
@@ -135,9 +125,7 @@ public class Person5Test {
         }
     }
 
-    /**
-     * Ca D08 (Bổ sung): Quote và escape chuẩn RFC 4180 cho chuỗi có dấu phẩy hoặc ngoặc kép
-     */
+
     private static void testD08_CsvEscapingAndFormatting() {
         System.out.println("--- Kiểm thử Ca D08 (Bổ sung): Quoting & Escaping RFC 4180 ---");
 
@@ -157,10 +145,6 @@ public class Person5Test {
         assertTrue("Điểm null xuất chuỗi rỗng", "".equals(formattedNull), formattedNull);
     }
 
-    /**
-     * Ca D09: Lưu -> thoát -> mở lại -> xuất bảng điểm
-     * Dữ liệu phục hồi đúng, TB An = 6.76.
-     */
     private static void testD09_SaveAndReloadDataPersistence() {
         System.out.println("--- Kiểm thử Ca D09: Lưu và Phục hồi toàn vẹn dữ liệu ---");
 
@@ -172,25 +156,22 @@ public class Person5Test {
 
         FileDataStore store = new FileDataStore(testDataPath);
 
-        // 1. Chuẩn bị dữ liệu ban đầu
+
         StudentManager sm1 = new StudentManager();
         CourseManager cm1 = new CourseManager();
         GradeManager gm1 = new GradeManager();
         FileDataStore.initializeSampleData(sm1, cm1, gm1);
 
         try {
-            // Lưu dữ liệu ra file
             store.saveData(sm1, cm1, gm1);
             assertTrue("D09 - File được lưu thành công", testFile.exists() && testFile.length() > 0, "Dung lượng: " + testFile.length());
 
-            // 2. Mô phỏng khởi động lại ứng dụng với các Manager hoàn toàn mới
             StudentManager sm2 = new StudentManager();
             CourseManager cm2 = new CourseManager();
             GradeManager gm2 = new GradeManager();
 
             assertTrue("D09 - Dữ liệu mới ban đầu rỗng", sm2.getStudentCount() == 0 && cm2.getCourseCount() == 0, "Managers rỗng");
 
-            // Nạp lại từ file
             boolean loaded = store.loadData(sm2, cm2, gm2);
             assertTrue("D09 - Load dữ liệu thành công", loaded, "loadData trả về true");
 
@@ -198,13 +179,11 @@ public class Person5Test {
             assertTrue("D09 - Phục hồi đủ 3 môn học", cm2.getCourseCount() == 3, "Course count: " + cm2.getCourseCount());
             assertTrue("D09 - Phục hồi đủ 3 bản ghi điểm", gm2.getRecordCount() == 3, "Grade count: " + gm2.getRecordCount());
 
-            // Kiểm tra đối tượng môn học được tạo đúng lớp con (Lý thuyết / Thực hành)
             Course lt101 = cm2.findCourseById("LT101");
             Course th101 = cm2.findCourseById("TH101");
             assertTrue("D09 - Phục hồi đúng loại môn Lý thuyết", "Lý thuyết".equals(lt101.getCourseType()), lt101.toString());
             assertTrue("D09 - Phục hồi đúng loại môn Thực hành", "Thực hành".equals(th101.getCourseType()), th101.toString());
 
-            // Kiểm tra tính bảng điểm An sau phục hồi: TB = 6.76
             TranscriptService ts2 = new TranscriptService(sm2, gm2);
             Transcript anTranscript = ts2.getTranscript("QE210001");
             Double gpaAn = anTranscript.calculateWeightedGPA();
@@ -214,7 +193,6 @@ public class Person5Test {
             assertTrue("D09 - Số môn đủ 2/3", anTranscript.getCompletedCourses() == 2 && anTranscript.getTotalCourses() == 3, "2/3 môn");
             assertTrue("D09 - Số tín chỉ đủ 5/7", anTranscript.getCompletedCredits() == 5 && anTranscript.getTotalCredits() == 7, "5/7 TC");
 
-            // Kiểm tra sinh viên Bình: chưa có kết quả -> CHUA_CO_DIEM_TRUNG_BINH
             Transcript binhTranscript = ts2.getTranscript("QE210002");
             assertTrue("D09 - Bình chưa có điểm TB", binhTranscript.calculateWeightedGPA() == null, binhTranscript.getFormattedGPA());
 
@@ -227,10 +205,7 @@ public class Person5Test {
         }
     }
 
-    /**
-     * Ca D10: An LT101: QT=0, CK=thiếu -> lưu -> mở lại
-     * QT vẫn 0, CK thiếu; TB = 7.00, đủ 1/3 môn, 2/7 TC.
-     */
+
     private static void testD10_ZeroScoreVsMissingScorePersistence() {
         System.out.println("--- Kiểm thử Ca D10: Phân biệt chính xác giữa điểm 0 và điểm thiếu ---");
 
@@ -247,16 +222,13 @@ public class Person5Test {
         GradeManager gm1 = new GradeManager();
         FileDataStore.initializeSampleData(sm1, cm1, gm1);
 
-        // Cập nhật LT101 của An: QT = 0.0, CK = thiếu (null)
         Student an = sm1.findStudent("QE210001");
         Course lt101 = cm1.findCourseById("LT101");
         gm1.createOrUpdateRecord(an, lt101, 0.0, null);
 
         try {
-            // Lưu ra file
             store.saveData(sm1, cm1, gm1);
 
-            // Khởi động lại và nạp vào Managers mới
             StudentManager sm2 = new StudentManager();
             CourseManager cm2 = new CourseManager();
             GradeManager gm2 = new GradeManager();
@@ -272,12 +244,6 @@ public class Person5Test {
                     "CK = " + reloadedLT101.getExamScore());
             assertTrue("D10 - LT101 chưa đủ điểm", !reloadedLT101.isComplete(), "isComplete() == false");
 
-            // Bảng điểm An lúc này:
-            // - LT101: QT=0, CK=null -> CHƯA ĐỦ ĐIỂM
-            // - TH101: QT=8, CK=6 -> ĐỦ ĐIỂM (tổng kết 7.00, 2 TC)
-            // - LT102: QT=9, CK=null -> CHƯA ĐỦ ĐIỂM
-            // -> Duy nhất TH101 đủ điểm!
-            // -> TB = 7.00, đủ 1/3 môn, 2/7 tín chỉ
             TranscriptService ts2 = new TranscriptService(sm2, gm2);
             Transcript anTranscript = ts2.getTranscript("QE210001");
             Double gpaAn = anTranscript.calculateWeightedGPA();
@@ -296,9 +262,6 @@ public class Person5Test {
         }
     }
 
-    /**
-     * Kiểm thử bảo vệ: File hỏng thì báo lỗi rõ ràng và KHÔNG làm mất dữ liệu hiện tại
-     */
     private static void testCorruptedFileProtection() {
         System.out.println("--- Kiểm thử Bảo vệ Dữ liệu: File hỏng ném lỗi và không xóa Manager ---");
 
@@ -310,7 +273,6 @@ public class Person5Test {
         }
 
         try {
-            // Tạo 1 file hỏng định dạng (điểm sai ký tự hoặc tín chỉ không hợp lệ)
             FileOutputStream fos = new FileOutputStream(corruptFile);
             OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
             osw.write("[STUDENTS]\nQE210001|An\n\n[COURSES]\nTHEORY|LT101|Mon hoc|INVALID_CREDIT\n");
@@ -341,9 +303,6 @@ public class Person5Test {
         }
     }
 
-    /**
-     * Kiểm thử đường dẫn tương đối và tự động tạo thư mục con
-     */
     private static void testRelativePathAndDirectoryCreation() {
         System.out.println("--- Kiểm thử Đường dẫn tương đối & Tự tạo thư mục ---");
 
@@ -370,9 +329,6 @@ public class Person5Test {
             }
         }
     }
-
-    // ==================== TIỆN ÍCH HỖ TRỢ ====================
-
     private static List<String> readLinesUtf8(File file) throws Exception {
         List<String> lines = new ArrayList<String>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
