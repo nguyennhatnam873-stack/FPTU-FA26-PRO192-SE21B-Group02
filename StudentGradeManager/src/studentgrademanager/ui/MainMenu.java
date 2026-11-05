@@ -24,6 +24,7 @@ public class MainMenu {
     private final GradeManager gradeManager;
     private final TranscriptService transcriptService;
     private final FileDataStore dataStore;
+    private final CsvExporter csvExporter;
     private final Scanner scanner;
 
 
@@ -34,6 +35,7 @@ public class MainMenu {
         this.courseManager = courseManager;
         this.gradeManager = gradeManager;
         this.dataStore = (dataStore != null) ? dataStore : new FileDataStore();
+        this.csvExporter = new CsvExporter();
         this.transcriptService = new TranscriptService(this.studentManager, this.gradeManager);
         this.scanner = new Scanner(System.in);
 
@@ -416,7 +418,7 @@ public class MainMenu {
 
         try {
             File file = new File(targetPath);
-            CsvExporter.exportTranscriptToCsv(transcript, file);
+            this.csvExporter.exportTranscript(transcript, file);
             System.out.println("Xuat file CSV thanh cong!");
             System.out.println("Duong dan file: " + file.getAbsolutePath());
         } catch (IOException e) {
