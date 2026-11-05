@@ -83,7 +83,7 @@ public class TranscriptService implements Serializable{
         System.out.printf("Diem trung binh tich luy (GPA): %s%n", transcript.getFormattedGpa());
         System.out.println("============================================================\n");
     }
-    private static String truncate(String text, int maxLength){
+    private String truncate(String text, int maxLength){
         if(text == null){
             return "";
         }
