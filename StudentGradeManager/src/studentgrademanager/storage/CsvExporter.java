@@ -18,8 +18,11 @@ public class CsvExporter {
     public static final String STATUS_COMPLETE = "DU_DIEM";
     public static final String STATUS_INCOMPLETE = "CHUA_DU_DIEM";
     public static final String CSV_HEADER = "MSSV,Ho va ten,Ma mon,Ten mon,So tin chi,Loai mon,Diem qua trinh,Diem cuoi ky,Diem tong ket,Trang thai";
+
+    public CsvExporter(){
+    }
     
-    public static String escapeCsvCell(String value){
+    public String escapeCsvCell(String value){
         if (value == null){
             return "";
         }
@@ -32,14 +35,14 @@ public class CsvExporter {
         return text;
     }
     
-    public static String formatScoreForCsv(Double score){
+    public String formatScoreForCsv(Double score){
         if (score == null){
             return "";
         }
         return String.format(Locale.US, "%.2f", score);
     }
     
-    public static String formatRecordToCsvLine(Student student, GradeRecord record){
+    public String formatRecordToCsvLine(Student student, GradeRecord record){
         if (record == null || record.getCourse() == null){
             return "";
         }
@@ -69,7 +72,7 @@ public class CsvExporter {
         return sb.toString();
     }
     
-    public static void exportTranscriptToCsv(Transcript transcript, File targetFile) throws IOException{
+    public void exportTranscript(Transcript transcript, File targetFile) throws IOException{
         if (transcript == null || targetFile == null){
             throw new IllegalArgumentException("Du lieu bang diem va file dich khong duoc null.");
         }
@@ -116,14 +119,14 @@ public class CsvExporter {
         }
     }
     
-    public static void exportTranscriptToCsv(Transcript transcript, String filePath) throws IOException {
+    public void exportTranscriptToCsv(Transcript transcript, String filePath) throws IOException {
         if (filePath == null || filePath.trim().isEmpty()){
             throw new IllegalArgumentException("Duong dan file khong duoc de trong.");
         }
-        exportTranscriptToCsv(transcript, new File(filePath.trim()));
+        this.exportTranscript(transcript, new File(filePath.trim()));
     }
     
-    public static void exportAllRecordToCsv(List<GradeRecord> records, String targetFilePath) throws IOException {
+    public void exportAllRecordToCsv(List<GradeRecord> records, String targetFilePath) throws IOException {
         if (records == null || targetFilePath == null){
             throw new IllegalArgumentException("Danh sach ket qua va duong dan khong duoc null.");
         }
