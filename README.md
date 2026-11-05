@@ -92,7 +92,7 @@ Final-Project/
 
 ---
 
-### 5. Quy ước Lưu trữ & Xuất CSV (Người 5)
+### 5. Quy ước Lưu trữ & Xuất CSV
 - **Vị trí file lưu trữ dữ liệu:** `data/data_store.txt` (đường dẫn tương đối).
 - **Cơ chế lưu trữ:** File văn bản phân mục (`[STUDENTS]`, `[COURSES]`, `[GRADES]`), áp dụng cơ chế **Atomic Save** (ghi file tạm `.tmp` trước, đảm bảo an toàn dữ liệu 100%).
 - **Xuất CSV:** Chuẩn RFC 4180, phân cách dấu phẩy `,`, dấu chấm thập phân `.`, có UTF-8 BOM để Excel hiển thị tiếng Việt chính xác.
