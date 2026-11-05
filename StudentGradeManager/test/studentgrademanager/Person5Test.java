@@ -86,34 +86,23 @@ public class Person5Test {
             List<String> lines = readLinesUtf8(csvFile);
             assertTrue("D08 - Header đúng chuẩn", lines.size() >= 4, "Số dòng đọc được: " + lines.size());
 
-            String header = lines.get(0).replace("\uFEFF", ""); // bỏ BOM nếu có
+            String header = lines.get(0).replace("\uFEFF", ""); 
             boolean headerOk = header.contains("MSSV") && header.contains("Diem qua trinh") && header.contains("Trang thai");
             assertTrue("D08 - Nội dung Header hợp lệ", headerOk, header);
 
 
             String lineLT101 = findLineContaining(lines, "LT101");
-            boolean lt101Ok = lineLT101 != null 
-                    && lineLT101.contains("8.00") 
-                    && lineLT101.contains("6.00") 
-                    && lineLT101.contains("6.60") 
-                    && lineLT101.contains(CsvExporter.STATUS_COMPLETE);
+            boolean lt101Ok = lineLT101 != null && lineLT101.contains("8.00") && lineLT101.contains("6.00") && lineLT101.contains("6.60") && lineLT101.contains(CsvExporter.STATUS_COMPLETE);
             assertTrue("D08 - Dòng LT101 đầy đủ điểm", lt101Ok, lineLT101);
 
 
             String lineTH101 = findLineContaining(lines, "TH101");
-            boolean th101Ok = lineTH101 != null 
-                    && lineTH101.contains("8.00") 
-                    && lineTH101.contains("6.00") 
-                    && lineTH101.contains("7.00") 
-                    && lineTH101.contains(CsvExporter.STATUS_COMPLETE);
+            boolean th101Ok = lineTH101 != null && lineTH101.contains("8.00") && lineTH101.contains("6.00") && lineTH101.contains("7.00") && lineTH101.contains(CsvExporter.STATUS_COMPLETE);
             assertTrue("D08 - Dòng TH101 đầy đủ điểm", th101Ok, lineTH101);
 
 
             String lineLT102 = findLineContaining(lines, "LT102");
-            boolean lt102Ok = lineLT102 != null 
-                    && lineLT102.contains("9.00") 
-                    && lineLT102.contains(",,") // ô CK và tổng kết trống
-                    && lineLT102.contains(CsvExporter.STATUS_INCOMPLETE);
+            boolean lt102Ok = lineLT102 != null && lineLT102.contains("9.00") && lineLT102.contains(",,") && lineLT102.contains(CsvExporter.STATUS_INCOMPLETE);
             assertTrue("D08 - Dòng LT102 trống cuối kỳ & tổng kết", lt102Ok, lineLT102);
 
         } catch (Exception e) {
