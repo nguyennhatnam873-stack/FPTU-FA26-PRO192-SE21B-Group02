@@ -77,7 +77,8 @@ public class Person5Test {
         }
 
         try {
-            CsvExporter.exportTranscriptToCsv(transcriptAn, csvFile);
+            CsvExporter exporter = new CsvExporter();
+            exporter.exportTranscript(transcriptAn, csvFile);
             assertTrue("D08 - File CSV được tạo", csvFile.exists() && csvFile.length() > 0, 
                     "File " + csvFile.getPath() + " tạo thành công, dung lượng: " + csvFile.length() + " bytes");
 
@@ -113,19 +114,21 @@ public class Person5Test {
     private static void testD08_CsvEscapingAndFormatting() {
         System.out.println("--- Kiểm thử Ca D08 (Bổ sung): Quoting & Escaping RFC 4180 ---");
 
-        String escapedSimple = CsvExporter.escapeCsvCell("Nguyen An");
+        CsvExporter exporter = new CsvExporter();
+
+        String escapedSimple = exporter.escapeCsvCell("Nguyen An");
         assertTrue("Escape chuỗi thường", "Nguyen An".equals(escapedSimple), escapedSimple);
 
-        String escapedComma = CsvExporter.escapeCsvCell("Ha Noi, Viet Nam");
+        String escapedComma = exporter.escapeCsvCell("Ha Noi, Viet Nam");
         assertTrue("Escape chuỗi có dấu phẩy", "\"Ha Noi, Viet Nam\"".equals(escapedComma), escapedComma);
 
-        String escapedQuote = CsvExporter.escapeCsvCell("Khoa \"CNTT\"");
+        String escapedQuote = exporter.escapeCsvCell("Khoa \"CNTT\"");
         assertTrue("Escape chuỗi có dấu ngoặc kép", "\"Khoa \"\"CNTT\"\"\"".equals(escapedQuote), escapedQuote);
 
-        String formattedScore0 = CsvExporter.formatScoreForCsv(0.0);
+        String formattedScore0 = exporter.formatScoreForCsv(0.0);
         assertTrue("Điểm 0 xuất 0.00", "0.00".equals(formattedScore0), formattedScore0);
 
-        String formattedNull = CsvExporter.formatScoreForCsv(null);
+        String formattedNull = exporter.formatScoreForCsv(null);
         assertTrue("Điểm null xuất chuỗi rỗng", "".equals(formattedNull), formattedNull);
     }
 
