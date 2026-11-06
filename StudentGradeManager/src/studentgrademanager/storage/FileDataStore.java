@@ -256,7 +256,9 @@ public class FileDataStore{
         }
         try {
             double val = Double.parseDouble(str);
-            GradeManager.validateScore(val);
+            if (val < 0.0 || val > 10.0 || Double.isNaN(val) || Double.isInfinite(val)){
+                throw new IllegalArgumentException("Diem phai nam trong khoang tu 0.0 den 10.0");
+            }   
             return val;
         } catch (Exception e){
             throw new IOException("Diem khong hop le tai dong " + line + ": '" + str + "' (" + e.getMessage() + ")");
