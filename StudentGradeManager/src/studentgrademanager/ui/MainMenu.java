@@ -300,7 +300,7 @@ public class MainMenu {
             }
 
             try {
-                return GradeManager.parseScore(input);
+                return this.gradeManager.parseScore(input);
             } catch (Exception e) {
                 System.out.println("  => Loi: " + e.getMessage() + ". Vui long nhap lai!");
             }
