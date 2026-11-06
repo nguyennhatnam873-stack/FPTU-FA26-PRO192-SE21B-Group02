@@ -10,12 +10,6 @@ import studentgrademanager.models.TheoryCourse;
 import studentgrademanager.models.Transcript;
 import studentgrademanager.services.GradeManager;
 
-/**
- * Bo kiem thu tu dong cho Nguoi 4 - Nhap & cap nhat diem.
- * Phu trach cac ca kiem thu: D03, D04, D05, D10 va cac quy tac mien diem [0, 10].
- * 
- * Chuan: JDK 8, NetBeans 17, kiem tra tuong minh cac yeu cau nghiep vu.
- */
 public class Person4Test {
 
     private static int totalTests = 0;
@@ -58,14 +52,9 @@ public class Person4Test {
         }
     }
 
-    /**
-     * Kiem tra ham validateScore(Double) doc lap:
-     * Chap nhan null, 0.0, 10.0; tu choi so am, > 10, NaN, vo cuc.
-     */
     private static void testScoreValidation_DomainAndSpecialValues() {
         System.out.println("--- Test 1: Kiem tra mien diem [0.0; 10.0] va gia tri dac biet ---");
 
-        // 1. null la diem thieu (hop le)
         try {
             GradeManager.validateScore(null);
             assertTrue("validateScore(null)", true, "null duoc chap nhan la diem thieu");
@@ -73,7 +62,6 @@ public class Person4Test {
             assertTrue("validateScore(null)", false, "null khong duoc nem loi: " + e.getMessage());
         }
 
-        // 2. Bien duoi: 0.0 (hop le)
         try {
             GradeManager.validateScore(0.0);
             assertTrue("validateScore(0.0)", true, "Diem 0.0 la hop le");
@@ -81,7 +69,6 @@ public class Person4Test {
             assertTrue("validateScore(0.0)", false, "0.0 bi loi: " + e.getMessage());
         }
 
-        // 3. Bien tren: 10.0 (hop le)
         try {
             GradeManager.validateScore(10.0);
             assertTrue("validateScore(10.0)", true, "Diem 10.0 la hop le");
@@ -89,7 +76,6 @@ public class Person4Test {
             assertTrue("validateScore(10.0)", false, "10.0 bi loi: " + e.getMessage());
         }
 
-        // 4. Gia tri ngoai bien duoi: -0.01 (tu choi)
         boolean caughtNeg = false;
         try {
             GradeManager.validateScore(-0.01);
@@ -98,7 +84,6 @@ public class Person4Test {
         }
         assertTrue("validateScore(-0.01)", caughtNeg, "Tu choi so am -0.01");
 
-        // 5. Gia tri ngoai bien tren: 10.01 (tu choi)
         boolean caughtOver = false;
         try {
             GradeManager.validateScore(10.01);
@@ -107,7 +92,6 @@ public class Person4Test {
         }
         assertTrue("validateScore(10.01)", caughtOver, "Tu choi so lon hon muoi: 10.01");
 
-        // 6. Gia tri dac biet: Double.NaN (tu choi)
         boolean caughtNaN = false;
         try {
             GradeManager.validateScore(Double.NaN);
@@ -116,7 +100,6 @@ public class Person4Test {
         }
         assertTrue("validateScore(NaN)", caughtNaN, "Tu choi Double.NaN");
 
-        // 7. Gia tri dac biet: Duong vo cuc (tu choi)
         boolean caughtPosInf = false;
         try {
             GradeManager.validateScore(Double.POSITIVE_INFINITY);
@@ -125,7 +108,6 @@ public class Person4Test {
         }
         assertTrue("validateScore(+Infinity)", caughtPosInf, "Tu choi POSITIVE_INFINITY");
 
-        // 8. Gia tri dac biet: Am vo cuc (tu choi)
         boolean caughtNegInf = false;
         try {
             GradeManager.validateScore(Double.NEGATIVE_INFINITY);
@@ -135,14 +117,9 @@ public class Person4Test {
         assertTrue("validateScore(-Infinity)", caughtNegInf, "Tu choi NEGATIVE_INFINITY");
     }
 
-    /**
-     * Kiem tra ham parseScore(String) doc lap:
-     * Phan biet chuoi rong / thieu voi chuoi so, chan chuoi sai kieu.
-     */
     private static void testScoreParsing_ValidAndInvalidStrings() {
         System.out.println("\n--- Test 2: Phan tich cu phap chuoi diem so (parseScore) ---");
 
-        // Diem thieu: null, rong, khoang trang, "-", "EMPTY", "null"
         assertTrue("parseScore(null) -> null", GradeManager.parseScore(null) == null, "Tra ve null");
         assertTrue("parseScore(\"\") -> null", GradeManager.parseScore("") == null, "Chuoi rong tra ve null");
         assertTrue("parseScore(\"   \") -> null", GradeManager.parseScore("   ") == null, "Khoang trang tra ve null");
@@ -151,14 +128,12 @@ public class Person4Test {
         assertTrue("parseScore(\"empty\") -> null", GradeManager.parseScore("empty") == null, "'empty' tra ve null");
         assertTrue("parseScore(\"NULL\") -> null", GradeManager.parseScore("NULL") == null, "'NULL' tra ve null");
 
-        // Diem hop le: 0, 0.0, 10, 8.5, dung dau phay "8,5"
         assertTrue("parseScore(\"0\") -> 0.0", Double.valueOf(0.0).equals(GradeManager.parseScore("0")), "So 0 la 0.0");
         assertTrue("parseScore(\"0.0\") -> 0.0", Double.valueOf(0.0).equals(GradeManager.parseScore("0.0")), "So 0.0 la 0.0");
         assertTrue("parseScore(\"10\") -> 10.0", Double.valueOf(10.0).equals(GradeManager.parseScore("10")), "So 10 la 10.0");
         assertTrue("parseScore(\"8.5\") -> 8.5", Double.valueOf(8.5).equals(GradeManager.parseScore("8.5")), "So 8.5 la 8.5");
         assertTrue("parseScore(\"8,5\") -> 8.5 (dau phay)", Double.valueOf(8.5).equals(GradeManager.parseScore("8,5")), "Ho tro dau phay 8,5 -> 8.5");
 
-        // Chuoi sai kieu: "abc", "NaN", "Infinity", "-0.01", "10.01"
         assertParseThrows("abc", "Chuoi chu cai 'abc'");
         assertParseThrows("NaN", "Chuoi dac biet 'NaN'");
         assertParseThrows("nan", "Chuoi dac biet 'nan'");
@@ -179,10 +154,6 @@ public class Person4Test {
         assertTrue("parseScore('" + input + "')", caught, "Tu choi " + description);
     }
 
-    /**
-     * Kiem tra tinh nguyen tu (Atomic Check-Before-Assign):
-     * Neu mot trong hai diem bi sai, ban ghi KHONG DUOC PHEP thay doi do dang.
-     */
     private static void testAtomicCheckBeforeAssign() {
         System.out.println("\n--- Test 3: Tinh nguyen tu - Kiem tra toan bo truoc khi gan ---");
 
@@ -190,12 +161,10 @@ public class Person4Test {
         Student s = new Student("SE01", "Test Student");
         Course c = new TheoryCourse("LT101", "Ly thuyet 1", 3);
 
-        // Ban dau: QT = 8.0, CK = 6.0
         gm.createOrUpdateRecord(s, c, 8.0, 6.0);
         GradeRecord record = gm.findRecord("SE01", "LT101");
         assertTrue("Ban ghi ban dau", record != null && record.getProcessScore() == 8.0 && record.getExamScore() == 6.0, "QT=8.0, CK=6.0");
 
-        // Co gang cap nhat: QT moi = 9.0 (hop le), CK moi = 12.0 (sai > 10)
         boolean caughtError = false;
         try {
             gm.createOrUpdateRecord(s, c, 9.0, 12.0);
@@ -204,14 +173,10 @@ public class Person4Test {
         }
         assertTrue("Bi tu choi khi CK sai", caughtError, "Ngoai le khi CK = 12.0");
 
-        // Kiem tra lai ban ghi: QT phai VAN LA 8.0 (khong bi doi thanh 9.0)
         assertTrue("QT giu nguyen 8.0", record.getProcessScore() == 8.0, "Diem QT cu duoc bao toan");
         assertTrue("CK giu nguyen 6.0", record.getExamScore() == 6.0, "Diem CK cu duoc bao toan");
     }
 
-    /**
-     * Dam bao khong tao ban ghi trung cho cung cap SV-Mon.
-     */
     private static void testNoDuplicateRecords() {
         System.out.println("\n--- Test 4: Khong tao ban ghi trung lap cho cung cap SV-Mon ---");
 
@@ -228,13 +193,6 @@ public class Person4Test {
         assertTrue("Diem cap nhat moi nhat", r.getProcessScore() == 9.0 && r.getExamScore() == 10.0, "QT=9.0, CK=10.0");
     }
 
-    /**
-     * Ca kiem thu D03:
-     * Du lieu mau: An co LT101 (QT 8, CK 6), TH101 (QT 8, CK 6), LT102 (QT 9, CK thieu);
-     * Binh chua co ket qua nao.
-     * Ky vong: LT102 ra CHUA_DU_DIEM va khong co diem tong ket;
-     * Binh ra 0/0 mon, 0.0 diem trung binh.
-     */
     private static void testD03_MissingScoreStateAndEmptyStudent() {
         System.out.println("\n--- Test D03: Trang thai CHUA_DU_DIEM & Sinh vien chua co ket qua ---");
 
@@ -250,7 +208,6 @@ public class Person4Test {
         gm.createOrUpdateRecord(an, th101, 8.0, 6.0);
         gm.createOrUpdateRecord(an, lt102, 9.0, null); // CK thieu
 
-        // Kiem tra An - LT102
         GradeRecord rLT102 = gm.findRecord("QE210001", "LT102");
         assertTrue("D03 - An LT102 chua hoan thanh", !rLT102.isComplete(), "isComplete() == false");
         String statusLT102 = rLT102.isComplete() ? GradeManager.DU_DIEM : GradeManager.CHUA_DU_DIEM;
@@ -258,7 +215,6 @@ public class Person4Test {
                 GradeManager.CHUA_DU_DIEM.equals(statusLT102), "Status = " + statusLT102);
         assertTrue("D03 - An LT102 khong co diem tong ket", rLT102.getFinalScore() == null, "getFinalScore() == null");
 
-        // Kiem tra Binh (chua co diem)
         Transcript transcriptBinh = new Transcript(binh, gm.getRecordsByStudent(binh.getStudentId()));
         assertTrue("D03 - Binh 0/0 mon", transcriptBinh.getCompletedCourses() == 0 && transcriptBinh.getTotalCourses() == 0, "0/0 mon");
         assertTrue("D03 - Binh CHUA_CO_DIEM_TRUNG_BINH",
@@ -266,12 +222,6 @@ public class Person4Test {
                 "GPA hien thi = " + transcriptBinh.getFormattedGpa());
     }
 
-    /**
-     * Ca kiem thu D04:
-     * Dat LT102 cua An thanh QT 0, CK 10:
-     * Tong ket LT102 = 0*0.3 + 10*0.7 = 7.00;
-     * GPA = 47.8 / 7 = 6.83, du 3/3 mon.
-     */
     private static void testD04_UpdateLT102_ZeroAndTen() {
         System.out.println("\n--- Test D04: Cap nhat LT102 QT 0, CK 10 -> Tong ket 7.00, GPA 6.83 ---");
 
@@ -285,7 +235,6 @@ public class Person4Test {
         gm.createOrUpdateRecord(an, th101, 8.0, 6.0);
         gm.createOrUpdateRecord(an, lt102, 9.0, null);
 
-        // Cap nhat LT102: QT = 0.0, CK = 10.0
         gm.createOrUpdateRecord(an, lt102, 0.0, 10.0);
 
         GradeRecord rLT102 = gm.findRecord("QE210001", "LT102");
@@ -308,11 +257,6 @@ public class Person4Test {
         assertTrue("D04 - GPA lam tron hien thi 6.83", "6.83".equals(formattedGPA), "Formatted GPA: " + formattedGPA);
     }
 
-    /**
-     * Ca kiem thu D05:
-     * Thu -0.01; 10.01; chuoi NaN; ma SV hoac mon khong ton tai.
-     * Tung thao tac bi tu choi, du lieu mau giu nguyen, trung binh An van 6.76.
-     */
     private static void testD05_RejectionOfInvalidInputPreservesSampleData() {
         System.out.println("\n--- Test D05: Tu choi cac thao tac sai pham, giu nguyen du lieu mau & GPA 6.76 ---");
 
@@ -322,12 +266,10 @@ public class Person4Test {
         Course th101 = new PracticeCourse("TH101", "Thuc hanh lap trinh Java", 2);
         Course lt102 = new TheoryCourse("LT102", "Cau truc du lieu va giai thuat", 2);
 
-        // Nap du lieu mau ban dau
         gm.createOrUpdateRecord(an, lt101, 8.0, 6.0);
         gm.createOrUpdateRecord(an, th101, 8.0, 6.0);
         gm.createOrUpdateRecord(an, lt102, 9.0, null);
 
-        // 1. Thu -0.01
         boolean c1 = false;
         try {
             Double val = GradeManager.parseScore("-0.01");
@@ -337,7 +279,6 @@ public class Person4Test {
         }
         assertTrue("D05 - Tu choi -0.01", c1, "Da bat loi -0.01");
 
-        // 2. Thu 10.01
         boolean c2 = false;
         try {
             Double val = GradeManager.parseScore("10.01");
@@ -347,7 +288,6 @@ public class Person4Test {
         }
         assertTrue("D05 - Tu choi 10.01", c2, "Da bat loi 10.01");
 
-        // 3. Thu chuoi "NaN"
         boolean c3 = false;
         try {
             Double val = GradeManager.parseScore("NaN");
@@ -357,7 +297,6 @@ public class Person4Test {
         }
         assertTrue("D05 - Tu choi chuoi NaN", c3, "Da bat loi 'NaN'");
 
-        // 4. Thu sinh vien khong ton tai (null)
         boolean c4 = false;
         try {
             gm.createOrUpdateRecord(null, lt101, 8.0, 8.0);
@@ -366,7 +305,6 @@ public class Person4Test {
         }
         assertTrue("D05 - Tu choi SV null", c4, "Khong cho phep sinh vien null");
 
-        // 5. Thu mon hoc khong ton tai (null)
         boolean c5 = false;
         try {
             gm.createOrUpdateRecord(an, null, 8.0, 8.0);
@@ -375,7 +313,6 @@ public class Person4Test {
         }
         assertTrue("D05 - Tu choi Course null", c5, "Khong cho phep mon hoc null");
 
-        // Kiem tra du lieu mau duoc giu nguyen hoan toan
         GradeRecord r1 = gm.findRecord("QE210001", "LT101");
         GradeRecord r2 = gm.findRecord("QE210001", "TH101");
         GradeRecord r3 = gm.findRecord("QE210001", "LT102");
@@ -384,19 +321,12 @@ public class Person4Test {
         assertTrue("D05 - TH101 giu nguyen 8.0, 6.0", r2.getProcessScore() == 8.0 && r2.getExamScore() == 6.0, "TH101 khong doi");
         assertTrue("D05 - LT102 giu nguyen 9.0, null", r3.getProcessScore() == 9.0 && r3.getExamScore() == null, "LT102 khong doi");
 
-        // GPA cua An van la 6.76 ((6.6*3 + 7.0*2) / 5 = 33.8 / 5 = 6.76)
         Transcript t = new Transcript(an, gm.getRecordsByStudent(an.getStudentId()));
         String formattedGPA = String.format(Locale.US, "%.2f", t.calculateWeightedGpa());
         assertTrue("D05 - GPA An giu nguyen 6.76", "6.76".equals(formattedGPA), "GPA formatted: " + formattedGPA);
         assertTrue("D05 - Du 2/3 mon", t.getCompletedCourses() == 2 && t.getTotalCourses() == 3, "2/3 mon");
     }
 
-    /**
-     * Ca kiem thu D10:
-     * Dat LT101 cua An thanh QT 0, CK thieu (null).
-     * Kiem tra: QT van la 0.0, CK van la thieu; chi TH101 du diem,
-     * GPA = 7.00, du 1/3 mon.
-     */
     private static void testD10_ZeroScoreVsMissingScore() {
         System.out.println("\n--- Test D10: Diem 0 phan biet hoan toan voi diem thieu (An LT101: QT=0, CK=null) ---");
 
@@ -410,7 +340,6 @@ public class Person4Test {
         gm.createOrUpdateRecord(an, th101, 8.0, 6.0);
         gm.createOrUpdateRecord(an, lt102, 9.0, null);
 
-        // Dat LT101 thanh: QT = 0.0, CK = null (thieu)
         gm.createOrUpdateRecord(an, lt101, 0.0, null);
 
         GradeRecord rLT101 = gm.findRecord("QE210001", "LT101");
@@ -420,7 +349,6 @@ public class Person4Test {
         assertTrue("D10 - LT101 trang thai CHUA_DU_DIEM", GradeManager.CHUA_DU_DIEM.equals(statusLT101), "Status = " + statusLT101);
         assertTrue("D10 - LT101 khong co diem tong ket", rLT101.getFinalScore() == null, "FinalScore = null");
 
-        // Bang diem An: luc nay chi co TH101 du diem (QT 8.0, CK 6.0 -> TK 7.00)
         Transcript t = new Transcript(an, gm.getRecordsByStudent(an.getStudentId()));
         assertTrue("D10 - Du dung 1/3 mon", t.getCompletedCourses() == 1 && t.getTotalCourses() == 3, "1/3 mon");
         String formattedGPA = String.format(Locale.US, "%.2f", t.calculateWeightedGpa());
