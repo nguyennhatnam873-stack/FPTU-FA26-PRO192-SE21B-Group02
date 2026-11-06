@@ -20,7 +20,6 @@ import studentgrademanager.services.TranscriptService;
 import studentgrademanager.storage.CsvExporter;
 import studentgrademanager.storage.FileDataStore;
 
-
 public class Person5Test {
 
     private static int totalTests = 0;
@@ -61,7 +60,6 @@ public class Person5Test {
         }
     }
 
-
     private static void testD08_ExportAnTranscriptToCsv() {
         System.out.println("--- Kiểm thử Ca D08: Xuất CSV bảng điểm mẫu của An ---");
 
@@ -79,7 +77,8 @@ public class Person5Test {
         }
 
         try {
-            CsvExporter.exportTranscriptToCsv(transcriptAn, csvFile);
+            CsvExporter exporter = new CsvExporter();
+            exporter.exportTranscript(transcriptAn, csvFile);
             assertTrue("D08 - File CSV được tạo", csvFile.exists() && csvFile.length() > 0, 
                     "File " + csvFile.getPath() + " tạo thành công, dung lượng: " + csvFile.length() + " bytes");
 
@@ -90,16 +89,14 @@ public class Person5Test {
             boolean headerOk = header.contains("MSSV") && header.contains("Diem qua trinh") && header.contains("Trang thai");
             assertTrue("D08 - Nội dung Header hợp lệ", headerOk, header);
 
-
             String lineLT101 = findLineContaining(lines, "LT101");
-            boolean lt101Ok = lineLT101 != null && lineLT101.contains("8.00") && lineLT101.contains("6.00") && lineLT101.contains("6.60") && lineLT101.contains(CsvExporter.STATUS_COMPLETE);
+            boolean lt101Ok = lineLT101 != null  && lineLT101.contains("8.00") && lineLT101.contains("6.00") && lineLT101.contains("6.60") && lineLT101.contains(CsvExporter.STATUS_COMPLETE);
             assertTrue("D08 - Dòng LT101 đầy đủ điểm", lt101Ok, lineLT101);
 
-
+        
             String lineTH101 = findLineContaining(lines, "TH101");
             boolean th101Ok = lineTH101 != null && lineTH101.contains("8.00") && lineTH101.contains("6.00") && lineTH101.contains("7.00") && lineTH101.contains(CsvExporter.STATUS_COMPLETE);
             assertTrue("D08 - Dòng TH101 đầy đủ điểm", th101Ok, lineTH101);
-
 
             String lineLT102 = findLineContaining(lines, "LT102");
             boolean lt102Ok = lineLT102 != null && lineLT102.contains("9.00") && lineLT102.contains(",,") && lineLT102.contains(CsvExporter.STATUS_INCOMPLETE);
@@ -114,23 +111,24 @@ public class Person5Test {
         }
     }
 
-
     private static void testD08_CsvEscapingAndFormatting() {
         System.out.println("--- Kiểm thử Ca D08 (Bổ sung): Quoting & Escaping RFC 4180 ---");
 
-        String escapedSimple = CsvExporter.escapeCsvCell("Nguyen An");
+        CsvExporter exporter = new CsvExporter();
+
+        String escapedSimple = exporter.escapeCsvCell("Nguyen An");
         assertTrue("Escape chuỗi thường", "Nguyen An".equals(escapedSimple), escapedSimple);
 
-        String escapedComma = CsvExporter.escapeCsvCell("Ha Noi, Viet Nam");
+        String escapedComma = exporter.escapeCsvCell("Ha Noi, Viet Nam");
         assertTrue("Escape chuỗi có dấu phẩy", "\"Ha Noi, Viet Nam\"".equals(escapedComma), escapedComma);
 
-        String escapedQuote = CsvExporter.escapeCsvCell("Khoa \"CNTT\"");
+        String escapedQuote = exporter.escapeCsvCell("Khoa \"CNTT\"");
         assertTrue("Escape chuỗi có dấu ngoặc kép", "\"Khoa \"\"CNTT\"\"\"".equals(escapedQuote), escapedQuote);
 
-        String formattedScore0 = CsvExporter.formatScoreForCsv(0.0);
+        String formattedScore0 = exporter.formatScoreForCsv(0.0);
         assertTrue("Điểm 0 xuất 0.00", "0.00".equals(formattedScore0), formattedScore0);
 
-        String formattedNull = CsvExporter.formatScoreForCsv(null);
+        String formattedNull = exporter.formatScoreForCsv(null);
         assertTrue("Điểm null xuất chuỗi rỗng", "".equals(formattedNull), formattedNull);
     }
 
@@ -145,7 +143,6 @@ public class Person5Test {
 
         FileDataStore store = new FileDataStore(testDataPath);
 
-
         StudentManager sm1 = new StudentManager();
         CourseManager cm1 = new CourseManager();
         GradeManager gm1 = new GradeManager();
@@ -154,12 +151,12 @@ public class Person5Test {
         try {
             store.saveData(sm1, cm1, gm1);
             assertTrue("D09 - File được lưu thành công", testFile.exists() && testFile.length() > 0, "Dung lượng: " + testFile.length());
-
             StudentManager sm2 = new StudentManager();
             CourseManager cm2 = new CourseManager();
             GradeManager gm2 = new GradeManager();
 
             assertTrue("D09 - Dữ liệu mới ban đầu rỗng", sm2.getStudentCount() == 0 && cm2.getCourseCount() == 0, "Managers rỗng");
+
 
             boolean loaded = store.loadData(sm2, cm2, gm2);
             assertTrue("D09 - Load dữ liệu thành công", loaded, "loadData trả về true");
@@ -173,6 +170,7 @@ public class Person5Test {
             assertTrue("D09 - Phục hồi đúng loại môn Lý thuyết", "Lý thuyết".equals(lt101.getCourseType()), lt101.toString());
             assertTrue("D09 - Phục hồi đúng loại môn Thực hành", "Thực hành".equals(th101.getCourseType()), th101.toString());
 
+         
             TranscriptService ts2 = new TranscriptService(sm2, gm2);
             Transcript anTranscript = ts2.getTranscript("QE210001");
             Double gpaAn = anTranscript.calculateWeightedGPA();
@@ -182,6 +180,7 @@ public class Person5Test {
             assertTrue("D09 - Số môn đủ 2/3", anTranscript.getCompletedCourses() == 2 && anTranscript.getTotalCourses() == 3, "2/3 môn");
             assertTrue("D09 - Số tín chỉ đủ 5/7", anTranscript.getCompletedCredits() == 5 && anTranscript.getTotalCredits() == 7, "5/7 TC");
 
+         
             Transcript binhTranscript = ts2.getTranscript("QE210002");
             assertTrue("D09 - Bình chưa có điểm TB", binhTranscript.calculateWeightedGPA() == null, binhTranscript.getFormattedGPA());
 
@@ -193,7 +192,6 @@ public class Person5Test {
             }
         }
     }
-
 
     private static void testD10_ZeroScoreVsMissingScorePersistence() {
         System.out.println("--- Kiểm thử Ca D10: Phân biệt chính xác giữa điểm 0 và điểm thiếu ---");
@@ -211,12 +209,15 @@ public class Person5Test {
         GradeManager gm1 = new GradeManager();
         FileDataStore.initializeSampleData(sm1, cm1, gm1);
 
+       
         Student an = sm1.findStudent("QE210001");
         Course lt101 = cm1.findCourseById("LT101");
         gm1.createOrUpdateRecord(an, lt101, 0.0, null);
 
         try {
+
             store.saveData(sm1, cm1, gm1);
+
 
             StudentManager sm2 = new StudentManager();
             CourseManager cm2 = new CourseManager();
@@ -318,6 +319,7 @@ public class Person5Test {
             }
         }
     }
+    
     private static List<String> readLinesUtf8(File file) throws Exception {
         List<String> lines = new ArrayList<String>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
