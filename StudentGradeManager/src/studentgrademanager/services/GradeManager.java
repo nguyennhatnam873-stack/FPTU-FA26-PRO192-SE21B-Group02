@@ -30,7 +30,7 @@ public class GradeManager implements Serializable {
         this.records = new ArrayList<GradeRecord>();
     }
 
-    public void validateScore(Double score) {
+    public static void validateScore(Double score)
         if (score == null) {
             return;
         }
@@ -46,7 +46,7 @@ public class GradeManager implements Serializable {
         }
     }
 
-    public Double parseScore(String input) {
+    public static Double parseScore(String input) {
         if (input == null) {
             return null;
         }
@@ -73,7 +73,7 @@ public class GradeManager implements Serializable {
         return val;
     }
 
-    public Double parseAndValidateScore(String input) {
+    public static Double parseAndValidateScore(String input) {
         return parseScore(input);
     }
 
