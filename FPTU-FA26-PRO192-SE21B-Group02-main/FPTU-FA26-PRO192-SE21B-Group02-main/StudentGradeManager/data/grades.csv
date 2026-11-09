@@ -1,0 +1,3 @@
+StudentID,StudentName,CourseCode,CourseName,Credits,ProcessScore,ExamScore,FinalGrade
+SE123,Nguyen Van A,PRO192,Java OOP,3,8.0,6.0,6.6
+SE456,Nguyen van B,LAB211,Class,3,7.0,5.0,5.6
